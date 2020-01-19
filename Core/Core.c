@@ -30,8 +30,11 @@ Net_Core_DATA_Type Net_Core_DATA;
 
 int __Sys_Net_Core_Init(void)
 {
+
 	Net_Core_DATA.Device_Node_List.Head=Null;
 	Net_Core_DATA.Device_Node_List.End=Null;
+
+
 
 	return Error_OK;
 }
@@ -41,25 +44,33 @@ int Net_Core_Init(void)
 
 	Net_Core_Device_Node_Type *Net_Node=Net_Core_DATA.Device_Node_List.Head;
 
-	Net_Socket_Init();
+	int Err;
+//	Net_Socket_Init();
+//	if(Err!=Error_OK)
+//	{
+//		return Err;
+//	}
 
 
 	while(Net_Node!=Null)
 	{
-		Net_Node->Task_PID_Rx=Scheduling_Create_Task(
+
+		if((Err=Scheduling_Create_Task(
 				(char*)Net_Node->P_OPS->Device_Name,
 				Net_Core_Task_RX,
 				Net_Node,
 				100,
 				Null,
 				200,
-				Scheduling_Task_Option_User);
+				Scheduling_Task_Option_User))<Error_OK)
+		{
+			return Err;
+		}
+
+		Net_Node->Task_PID_Rx=Err;
 
 		Net_Node=Net_Node->NEXT;
 	}
-
-
-
 
 
 	return Error_OK;
@@ -85,8 +96,6 @@ __task void Net_Core_Task_RX(void *Args)
 
 	if(Net_Node==Null)return;
 
-	Net_Node->Open=false;
-
 
 	if(Net_Node->P_OPS->Init(0)!=Error_OK)
 	{
@@ -99,33 +108,6 @@ __task void Net_Core_Task_RX(void *Args)
 		return ;
 	}
 
-	if(IPv4_ARP_Init(Net_Node,&Net_Node->ARP_DATA)!=Error_OK)
-	{
-		return ;
-	}
-	if(IPv4_Init(Net_Node,&Net_Node->IPv4_DATA)!=Error_OK)
-	{
-		return ;
-	}
-	if(Protocol_TCP_Init(Net_Node,&Net_Node->Protocol_TCP_DATA)!=Error_OK)
-	{
-		return ;
-	}
-	if(Protocol_UDP_Init(Net_Node,&Net_Node->Protocol_UDP_DATA)!=Error_OK)
-	{
-		return ;
-	}
-
-	if(Session_Init(Net_Node,&Net_Node->Session_DATA)!=Error_OK)
-	{
-		return ;
-	}
-
-	Net_Node->Rx_DATA=Memory_Malloc(Net_Node->P_OPS->HEADER+Net_Node->P_OPS->MTU);
-	if(Net_Node->Rx_DATA==Null)
-	{
-		return ;
-	}
 
 	Net_Node->Task_PID_Tx=Scheduling_Create_Task(
 			(char*)Net_Node->P_OPS->Device_Name,

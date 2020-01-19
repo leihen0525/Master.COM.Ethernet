@@ -370,6 +370,7 @@ void IPv4_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *IPv4_Packet)
 					Out_Size)==Error_OK)
 			{
 				Protocol_TCP_Handle_Rx(
+						Net_Protocol_IP_IPv4,
 						P_Net_Node,
 						&Net_IPv4_TCP_Pseudo_Heade,
 						Out_DATA,
@@ -388,6 +389,7 @@ void IPv4_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *IPv4_Packet)
 					Out_Size)==Error_OK)
 			{
 				Protocol_UDP_Handle_Rx(
+						Net_Protocol_IP_IPv4,
 						P_Net_Node,
 						&Net_IPv4_UDP_Pseudo_Heade,
 						Out_DATA,

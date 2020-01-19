@@ -14,7 +14,7 @@
 #include "IPv4/IPv4.ARP.Struct.h"
 #include "Protocol/Protocol.TCP.Struct.h"
 #include "Protocol/Protocol.UDP.Struct.h"
-#include "Session/Session.Struct.h"
+//#include "Session/Session.Struct.h"
 
 
 
@@ -38,7 +38,7 @@ typedef struct Net_Core_Device_Node
 	Net_Protocol_TCP_DATA_Type Protocol_TCP_DATA;
 	Net_Protocol_UDP_DATA_Type Protocol_UDP_DATA;
 
-	Net_Session_DATA_Type Session_DATA;
+	//Net_Session_DATA_Type Session_DATA;
 
 	const Net_Device_OPS_Type *P_OPS;
 

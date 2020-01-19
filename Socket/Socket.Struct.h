@@ -9,10 +9,13 @@
 #define SOCKET_STRUCT_H_
 
 #include "Master.Stdint.h"
+#include "Session/Session.h"
 
 typedef struct
 {
-	int Handle;
+	int Handle							:29;
+
+	Net_Session_DATA_Type Session_DATA;
 
 }Net_Socket_DATA_Type;
 

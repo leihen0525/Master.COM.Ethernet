@@ -34,16 +34,18 @@ int Protocol_UDP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_UDP_DAT
 }
 
 void Protocol_UDP_Handle_Rx(
+		Net_Protocol_IP_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
 		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,
-		uint8_t *IPv4_UDP_Packet,
-		uint16_t IPv4_UDP_Packet_Size)
+		uint8_t *Protocol_UDP_Packet,
+		uint16_t Protocol_UDP_Packet_Size)
 {
-	if(P_Net_Node==Null
+	if(IP_Type>=Net_Protocol_IP_End
+	|| P_Net_Node==Null
 	|| P_Pseudo_Heade==Null
-	|| IPv4_UDP_Packet==Null
-	|| IPv4_UDP_Packet_Size==0
-	|| IPv4_UDP_Packet_Size<sizeof(Net_Protocol_UDP_Packet_Heade_Type))
+	|| Protocol_UDP_Packet==Null
+	|| Protocol_UDP_Packet_Size==0
+	|| Protocol_UDP_Packet_Size<sizeof(Net_Protocol_UDP_Packet_Heade_Type))
 	{
 		return ;
 	}
@@ -51,12 +53,12 @@ void Protocol_UDP_Handle_Rx(
 	if(Net_Core_CheckSum(
 			(uint16_t *)P_Pseudo_Heade,
 			sizeof(Net_IPv4_Packet_Pseudo_Heade_Type),
-			(uint16_t *)IPv4_UDP_Packet,
-			IPv4_UDP_Packet_Size)!=UINT16_REVERSE(0x0000))
+			(uint16_t *)Protocol_UDP_Packet,
+			Protocol_UDP_Packet_Size)!=UINT16_REVERSE(0x0000))
 	{
 		return ;
 	}
-	Net_Protocol_UDP_Packet_Heade_Type *P_Protocol_UDP_Packet_Heade=(Net_Protocol_UDP_Packet_Heade_Type *)IPv4_UDP_Packet;
+	Net_Protocol_UDP_Packet_Heade_Type *P_Protocol_UDP_Packet_Heade=(Net_Protocol_UDP_Packet_Heade_Type *)Protocol_UDP_Packet;
 
 	if(UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->DEST_PORT)==6000)
 	{
@@ -65,7 +67,7 @@ void Protocol_UDP_Handle_Rx(
 		{
 			DATA1[i]='A';
 		}
-		Protocol_UDP_Tx(P_Net_Node,P_Pseudo_Heade->SRC_IPv4_Address,6000,6000,DATA1,4500);
+		Protocol_UDP_Tx(IP_Type,P_Net_Node,P_Pseudo_Heade->SRC_IPv4_Address,6000,6000,DATA1,4500);
 	}
 
 
@@ -73,14 +75,15 @@ void Protocol_UDP_Handle_Rx(
 }
 
 int Protocol_UDP_Tx(
+		Net_Protocol_IP_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
-		uint8_t *DEST_IPv4_Address,
+		uint8_t *DEST_IP_Address,
 		uint16_t SRC_PORT,
 		uint16_t DEST_PORT,
 		uint8_t *DATA,
 		uint16_t Size)
 {
-	if(P_Net_Node==Null || DEST_IPv4_Address==Null || (Size!=0 && DATA==Null))
+	if(IP_Type>=Net_Protocol_IP_End || P_Net_Node==Null || DEST_IP_Address==Null || (Size!=0 && DATA==Null))
 	{
 		return Error_Invalid_Parameter;
 	}
@@ -96,7 +99,7 @@ int Protocol_UDP_Tx(
 	if((Err=IPv4_Pseudo_Heade_Init(
 			P_Pseudo_Heade,
 			P_Net_Node->IP_Config.IPv4.IP_Address,
-			DEST_IPv4_Address,
+			DEST_IP_Address,
 			Net_IPv4_Protocol_UDP,
 			sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size))!=Error_OK)
 	{
@@ -130,7 +133,7 @@ int Protocol_UDP_Tx(
 	Err=IPv4_Tx_Pend_DATA(
 				P_Net_Node,
 				Net_IPv4_Protocol_UDP,
-				DEST_IPv4_Address,
+				DEST_IP_Address,
 				Protocol_UDP_Packet,
 				sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size,
 				true);

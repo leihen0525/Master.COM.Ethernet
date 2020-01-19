@@ -45,16 +45,18 @@ int Protocol_TCP_ISN_10MS(Net_Protocol_TCP_DATA_Type *P_Protocol_TCP_DATA)
 
 
 void Protocol_TCP_Handle_Rx(
+		Net_Protocol_IP_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
 		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,
-		uint8_t *IPv4_TCP_Packet,
-		uint16_t IPv4_TCP_Packet_Size)
+		uint8_t *Protocol_TCP_Packet,
+		uint16_t Protocol_TCP_Packet_Size)
 {
-	if(P_Net_Node==Null
+	if(IP_Type>=Net_Protocol_IP_End
+	|| P_Net_Node==Null
 	|| P_Pseudo_Heade==Null
-	|| IPv4_TCP_Packet==Null
-	|| IPv4_TCP_Packet_Size==0
-	|| IPv4_TCP_Packet_Size<sizeof(Net_Protocol_TCP_Packet_Heade_Type))
+	|| Protocol_TCP_Packet==Null
+	|| Protocol_TCP_Packet_Size==0
+	|| Protocol_TCP_Packet_Size<sizeof(Net_Protocol_TCP_Packet_Heade_Type))
 	{
 		return ;
 	}
@@ -62,12 +64,12 @@ void Protocol_TCP_Handle_Rx(
 	if(Net_Core_CheckSum(
 			(uint16_t *)P_Pseudo_Heade,
 			sizeof(Net_IPv4_Packet_Pseudo_Heade_Type),
-			(uint16_t *)IPv4_TCP_Packet,
-			IPv4_TCP_Packet_Size)!=UINT16_REVERSE(0x0000))
+			(uint16_t *)Protocol_TCP_Packet,
+			Protocol_TCP_Packet_Size)!=UINT16_REVERSE(0x0000))
 	{
 		return ;
 	}
-	Net_Protocol_TCP_Packet_Heade_Type *P_Protocol_TCP_Packet_Heade=(Net_Protocol_TCP_Packet_Heade_Type *)IPv4_TCP_Packet;
+	Net_Protocol_TCP_Packet_Heade_Type *P_Protocol_TCP_Packet_Heade=(Net_Protocol_TCP_Packet_Heade_Type *)Protocol_TCP_Packet;
 
 
 	return ;

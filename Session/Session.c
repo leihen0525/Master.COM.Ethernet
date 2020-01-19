@@ -13,14 +13,19 @@
 
 #include "Session.h"
 
-int Session_Init(
-		Net_Core_Device_Node_Type *P_Net_Node,
-		Net_Session_DATA_Type *P_Session_DATA)
+int Session_Init(Net_Session_DATA_Type *P_Session_DATA)
 {
-	if(P_Net_Node==Null || P_Session_DATA==Null)
+	if(P_Session_DATA==Null)
 	{
 		return Error_Invalid_Parameter;
 	}
+
+	P_Session_DATA->IP_List.Head=Null;
+	P_Session_DATA->IP_List.End=Null;
+
+	P_Session_DATA->ICMP_List.Head=Null;
+	P_Session_DATA->ICMP_List.End=Null;
+
 
 	P_Session_DATA->TCP_List.Head=Null;
 	P_Session_DATA->TCP_List.End=Null;
@@ -28,17 +33,6 @@ int Session_Init(
 	P_Session_DATA->UDP_List.Head=Null;
 	P_Session_DATA->UDP_List.End=Null;
 
-//	P_Session_DATA->TCP.IN.Head=Null;
-//	P_Session_DATA->TCP.IN.End=Null;
-//
-//	P_Session_DATA->TCP.OUT.Head=Null;
-//	P_Session_DATA->TCP.OUT.End=Null;
-//
-//	P_Session_DATA->UDP.IN.Head=Null;
-//	P_Session_DATA->UDP.IN.End=Null;
-//
-//	P_Session_DATA->UDP.OUT.Head=Null;
-//	P_Session_DATA->UDP.OUT.End=Null;
 
 	return Error_OK;
 
@@ -47,58 +41,67 @@ int Session_Init(
 
 
 int Session_Switch_List(
-		Net_Core_Device_Node_Type *P_Net_Node,
+		Net_Session_DATA_Type *P_Session_DATA,
 		Net_Session_Protocol_Type Protocol,
-		//Net_Session_Direction_Type Direction,
 		Net_Session_Node_List_Type **P_List)
 {
-	if(P_Net_Node==Null
-	|| Protocol>=Net_Session_Protocol_End
-	//|| Direction>=Net_Session_Direction_End
+	if(P_Session_DATA==Null
 	|| P_List==Null)
 	{
 		return Error_Invalid_Parameter;
 	}
 
-	if(Protocol==Net_Session_Protocol_UDP)
+	switch (Protocol)
 	{
+		case Net_Session_Protocol_IP:
+		{
+			*P_List=&P_Session_DATA->IP_List;
 
-		*P_List=&P_Net_Node->Session_DATA.UDP_List;
+			return Error_OK;
+		}break;
+		case Net_Session_Protocol_ICMP:
+		{
+			*P_List=&P_Session_DATA->ICMP_List;
 
-		return Error_OK;
+			return Error_OK;
+		}break;
+		case Net_Session_Protocol_UDP:
+		{
+			*P_List=&P_Session_DATA->UDP_List;
 
+			return Error_OK;
+		}break;
+		case Net_Session_Protocol_TCP:
+		{
+			*P_List=&P_Session_DATA->TCP_List;
+
+			return Error_OK;
+		}break;
+		default:
+		{
+			return Error_Invalid_Parameter;
+		}break;
 	}
-	else if(Protocol==Net_Session_Protocol_TCP)
-	{
 
-		*P_List=&P_Net_Node->Session_DATA.TCP_List;
-
-		return Error_OK;
-
-	}
-	return Error_Undefined;
 }
 
 int Session_Add_Node(
-		Net_Core_Device_Node_Type *P_Net_Node,
+		Net_Session_DATA_Type *P_Session_DATA,
 		Net_Session_Handle_Type Handle,
 
 		Net_Session_Protocol_Type Protocol,
-		//Net_Session_Direction_Type Direction,
 
 		Net_Session_Node_DATA_Type **P_Node_DATA
 		)
 {
-	if(P_Net_Node==Null
-
+	if(P_Session_DATA==Null
 	|| Protocol>=Net_Session_Protocol_End
-
 	)
 	{
 		return Error_Invalid_Parameter;
 	}
 
-	int Err=Session_Find_Node(P_Net_Node,Protocol,&Handle,Null,Null);
+	int Err=Session_Find_Node(P_Session_DATA,Protocol,&Handle,Null,Null);
 
 	if(Err!=Error_Undefined)
 	{
@@ -111,7 +114,7 @@ int Session_Add_Node(
 
 	Net_Session_Node_List_Type *P_Temp_List=Null;
 
-	Err=Session_Switch_List(P_Net_Node,Protocol,&P_Temp_List);
+	Err=Session_Switch_List(P_Session_DATA,Protocol,&P_Temp_List);
 
 	if(Err!=Error_OK)
 	{
@@ -276,10 +279,9 @@ Loop_End:
 }
 */
 int Session_Find_Node(
-		Net_Core_Device_Node_Type *P_Net_Node,
+		Net_Session_DATA_Type *P_Session_DATA,
 
 		Net_Session_Protocol_Type Protocol,
-		//Net_Session_Direction_Type Direction,
 
 		Net_Session_Handle_Type *P_Handle,
 
@@ -288,10 +290,8 @@ int Session_Find_Node(
 		Net_Session_Node_DATA_Type **P_Node_DATA
 		)
 {
-	if(P_Net_Node==Null
-	//|| P_Address_DATA==Null
+	if(P_Session_DATA==Null
 	|| Protocol>=Net_Session_Protocol_End
-	//|| Direction>=Net_Session_Direction_End
 	|| (P_Handle==Null && P_Address_DATA==Null && P_Node_DATA==Null)
 	)
 	{
@@ -321,7 +321,7 @@ int Session_Find_Node(
 
 	Net_Session_Node_List_Type *P_Temp_List=Null;
 
-	int Err=Session_Switch_List(P_Net_Node,Protocol,&P_Temp_List);
+	int Err=Session_Switch_List(P_Session_DATA,Protocol,&P_Temp_List);
 
 	if(Err!=Error_OK)
 	{

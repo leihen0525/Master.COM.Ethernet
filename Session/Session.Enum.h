@@ -12,8 +12,11 @@
 
 typedef enum
 {
-	Net_Session_Protocol_UDP						=0,
+	Net_Session_Protocol_IP							=0,
+	Net_Session_Protocol_ICMP,
+	Net_Session_Protocol_UDP,
 	Net_Session_Protocol_TCP,
+
 	Net_Session_Protocol_End,
 }Net_Session_Protocol_Type;
 

@@ -22,8 +22,8 @@ typedef union
 	struct
 	{
 		//int Direction				:1;
-		int Handle					:30;
-		int Protocol				:1;
+		int Handle					:29;
+		int Protocol				:2;
 		int 						:1;
 	};
 }Net_Session_Handle_Type;
@@ -51,6 +51,9 @@ typedef struct
 
 typedef struct
 {
+	Net_Session_Node_List_Type IP_List;
+	Net_Session_Node_List_Type ICMP_List;
+
 	Net_Session_Node_List_Type TCP_List;
 	Net_Session_Node_List_Type UDP_List;
 

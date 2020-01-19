@@ -12,6 +12,14 @@
 #include "Includes/Net.Core.Device.h"
 //#include "Includes/Net.Device.Struct.h"
 
+#include "IPv4/IPv4.ARP.h"
+#include "IPv4/IPv4.h"
+#include "Protocol/Protocol.TCP.h"
+#include "Protocol/Protocol.UDP.h"
+//#include "Session/Session.h"
+#include "Socket/Socket.h"
+
+
 extern Net_Core_DATA_Type Net_Core_DATA;
 
 int Net_Core_Device_Register(
@@ -54,6 +62,39 @@ int Net_Core_Device_Register(
 	Temp_Node->P_OPS=P_OPS;
 
 
+	//Init
+	int Err;
+	Temp_Node->Open=false;
+
+	Temp_Node->Rx_DATA=Memory_Malloc(Temp_Node->P_OPS->HEADER+Temp_Node->P_OPS->MTU);
+	if(Temp_Node->Rx_DATA==Null)
+	{
+		return Error_Allocation_Memory_Failed;
+	}
+
+	if((Err=IPv4_ARP_Init(Temp_Node,&Temp_Node->ARP_DATA))!=Error_OK)
+	{
+		return Err;
+	}
+	if((Err=IPv4_Init(Temp_Node,&Temp_Node->IPv4_DATA))!=Error_OK)
+	{
+		return Err;
+	}
+	if((Err=Protocol_TCP_Init(Temp_Node,&Temp_Node->Protocol_TCP_DATA))!=Error_OK)
+	{
+		return Err;
+	}
+	if((Err=Protocol_UDP_Init(Temp_Node,&Temp_Node->Protocol_UDP_DATA))!=Error_OK)
+	{
+		return Err;
+	}
+
+//	if((Err=Session_Init(Temp_Node,&Temp_Node->Session_DATA))!=Error_OK)
+//	{
+//		return Err;
+//	}
+
+	//
 	if(Net_Core_DATA.Device_Node_List.End==Null)
 	{
 		Net_Core_DATA.Device_Node_List.Head=Temp_Node;
