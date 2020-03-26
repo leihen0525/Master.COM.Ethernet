@@ -1,7 +1,7 @@
 /*
  * Core.Device.c
  *
- *  Created on: 2019Äê7ÔÂ15ÈÕ
+ *  Created on: 2019å¹´7æœˆ15æ—¥
  *      Author: Master.HE
  */
 #include <string.h>
@@ -17,7 +17,7 @@
 #include "Protocol/Protocol.TCP.h"
 #include "Protocol/Protocol.UDP.h"
 //#include "Session/Session.h"
-#include "Socket/Socket.h"
+//#include "Socket/Socket.h"
 
 
 extern Net_Core_DATA_Type Net_Core_DATA;

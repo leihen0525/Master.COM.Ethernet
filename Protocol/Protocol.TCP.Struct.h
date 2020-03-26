@@ -1,7 +1,7 @@
 /*
  * Protocol.TCP.Struct.h
  *
- *  Created on: 2019��7��17��
+ *  Created on: 2019年7月17日
  *      Author: Master.HE
  */
 
@@ -10,6 +10,9 @@
 
 #include "Master.Stdint.h"
 
+#include "Protocol.PORT.Struct.h"
+
+#include "Protocol.TCP.Link.Struct.h"
 
 #pragma pack(1)
 
@@ -18,11 +21,11 @@ typedef union
 	uint16_t DATA;
 	struct
 	{
-		uint16_t Fin					:1;
-		uint16_t Syn					:1;
-		uint16_t Reset					:1;
+		uint16_t Fin					:1;				//释放连接
+		uint16_t Syn					:1;				//请求连接
+		uint16_t Reset					:1;				//拒绝连接
 		uint16_t Push					:1;
-		uint16_t Ack					:1;
+		uint16_t Ack					:1;				//确认号有效
 		uint16_t Urgent					:1;
 		uint16_t ECN_Echo				:1;
 		uint16_t CWR					:1;
@@ -59,15 +62,19 @@ typedef struct
 //-------------------------------------------------------------------------------------------------
 
 
+//typedef struct
+//{
+//	int a;
+//
+//}Net_Protocol_TCP_Node_DATA_Type;
+
+
 typedef struct
 {
-	int a;
+	Net_Protocol_PORT_DATA_Type PORT_DATA;
 
-}Net_Protocol_TCP_Node_DATA_Type;
+	Net_Protocol_TCP_Link_DATA_Type Link_DATA;
 
-
-typedef struct
-{
 	uint32_t ISN;
 
 

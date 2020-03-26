@@ -1,7 +1,7 @@
 /*
  * IPv4.ARP.c
  *
- *  Created on: 2019Äê7ÔÂ17ÈÕ
+ *  Created on: 2019å¹´7æœˆ17æ—¥
  *      Author: Master.HE
  */
 #include <string.h>
@@ -26,7 +26,6 @@ Net_IPv4_ARP_Cache_Node_Type Static_Net_IPv4_ARP_Cache_Node[]=
 		.NEXT=Null
 	},
 
-
 };
 
 
@@ -45,7 +44,7 @@ int IPv4_ARP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_IPv4_ARP_DATA_Type *
 	P_IPv4_ARP_DATA->ARP_Cache_List.End=Null;
 
 
-	//Ìí¼Ó¾²Ì¬ARP
+	//æ·»åŠ é™æ€ARP
 	int Size=sizeof(Static_Net_IPv4_ARP_Cache_Node)/sizeof(Net_IPv4_ARP_Cache_Node_Type);
 	for(int i=0;i<Size;i++)
 	{
@@ -260,7 +259,7 @@ void IPv4_ARP_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *ARP_Packe
 
 		case Net_IPv4_ARP_Opcode_Reply:
 		{
-			//¼ì²éÄ¿±êMAC AddressÊÇ·ñÎª±¾»ú
+			//æ£€æŸ¥ç›®æ ‡MAC Addressæ˜¯å¦ä¸ºæœ¬æœº
 			if(memcmp(P_Net_Node->P_OPS->MAC_Address,P_ARP_Packet->Target_MAC_Address,6)!=0)
 			{
 				return ;

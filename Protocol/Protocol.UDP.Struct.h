@@ -1,7 +1,7 @@
 /*
  * Protocol.UDP.Struct.h
  *
- *  Created on: 2019Äê7ÔÂ17ÈÕ
+ *  Created on: 2019å¹´7æœˆ17æ—¥
  *      Author: Master.HE
  */
 
@@ -9,7 +9,7 @@
 #define PROTOCOL_UDP_STRUCT_H_
 
 #include "Master.Stdint.h"
-
+#include "Protocol.PORT.Struct.h"
 
 #pragma pack(1)
 
@@ -36,7 +36,9 @@ typedef struct
 
 typedef struct
 {
-	int a;
+	Net_Protocol_PORT_DATA_Type PORT_DATA;
+
+
 }Net_Protocol_UDP_DATA_Type;
 
 

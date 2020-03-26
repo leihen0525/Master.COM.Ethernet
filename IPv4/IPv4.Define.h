@@ -1,7 +1,7 @@
 /*
  * IPv4.Define.h
  *
- *  Created on: 2019Äê7ÔÂ19ÈÕ
+ *  Created on: 2019å¹´7æœˆ19æ—¥
  *      Author: Master.HE
  */
 
@@ -19,7 +19,7 @@
 #define Net_IPv4_Pend_Max_Count							(5)
 #define Net_IPv4_Pend_Max_Time							(50)
 
-#define Net_IPv4I_DATA_Rx_List_Max_Count				(20)
+#define Net_IPv4_DATA_Rx_List_Max_Count					(20)
 
 
 #define Net_IPv4_Adress_0x00							"\x00\x00\x00\x00"

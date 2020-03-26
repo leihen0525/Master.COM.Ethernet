@@ -1,7 +1,7 @@
 /*
  * Net.Core.Struct.h
  *
- *  Created on: 2019Äê12ÔÂ20ÈÕ
+ *  Created on: 2019å¹´12æœˆ20æ—¥
  *      Author: Master.HE
  */
 
@@ -12,7 +12,7 @@ typedef struct
 {
 	union
 	{
-		uint8_t DATA[8];
+		uint8_t IP_DATA[8];
 
 		uint32_t _IPv4_Address;
 		uint8_t IPv4_Address[4];
@@ -26,6 +26,21 @@ typedef struct
 	uint16_t DEST_PORT;
 
 	uint8_t Address_Type;
+
+
+	union
+	{
+		uint8_t Enabled_DATA;
+
+		struct
+		{
+			uint8_t IPv4			:1;
+			uint8_t IPv6			:1;
+			uint8_t SRC_PORT		:1;
+			uint8_t DEST_PORT		:1;
+			uint8_t					:4;
+		}Enabled;
+	};
 
 }Net_Core_Address_DATA_Type;
 

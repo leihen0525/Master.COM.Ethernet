@@ -1,7 +1,7 @@
 /*
  * IPv4.c
  *
- *  Created on: 2019Äê7ÔÂ17ÈÕ
+ *  Created on: 2019å¹´7æœˆ17æ—¥
  *      Author: Master.HE
  */
 #include <string.h>
@@ -20,7 +20,7 @@
 #include "Protocol/Protocol.UDP.h"
 #include "Protocol/Protocol.TCP.h"
 
-//TODO ÓĞÒ»¸ö¹¦ÄÜÃ»ÓĞÊµÏÖ ¾ÍÊÇµ±·ÖÆ¬µÄÊı¾İ°ü±»¶ªÆúµÄÊ±ºò ÀíÂÛÉÏ»á·¢ËÍÒ»Ö¡ICMPÊı¾İ°ü¸ø·¢ËÍ×Å ¸æÖªÊı¾İ°ü±»¶ªÆúÁË
+//TODO æœ‰ä¸€ä¸ªåŠŸèƒ½æ²¡æœ‰å®ç° å°±æ˜¯å½“åˆ†ç‰‡çš„æ•°æ®åŒ…è¢«ä¸¢å¼ƒçš„æ—¶å€™ ç†è®ºä¸Šä¼šå‘é€ä¸€å¸§ICMPæ•°æ®åŒ…ç»™å‘é€ç€ å‘ŠçŸ¥æ•°æ®åŒ…è¢«ä¸¢å¼ƒäº†
 
 int IPv4_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_IPv4_DATA_Type *P_IPv4_DATA)
 {
@@ -185,7 +185,7 @@ IPv4_Time_1S_S:
 			P_Rx_Node=Null;
 			P_Net_Node->IPv4_DATA.Rx_List.Count--;
 
-			if(P_Net_Node->IPv4_DATA.Rx_List.List.Head==Null)//ÏÂÒ»¸ö»¹ÓĞ
+			if(P_Net_Node->IPv4_DATA.Rx_List.List.Head==Null)//ä¸‹ä¸€ä¸ªè¿˜æœ‰
 			{
 				P_Net_Node->IPv4_DATA.Rx_List.List.End=Null;
 			}
@@ -596,7 +596,7 @@ int IPv4_Tx_Pend_DATA(
 	}
 	else if(Err==Net_IPv4_Address_Type_SelfAddress)
 	{
-		//TODO Õâ¸öµØ·½ÓĞµãÌØÊâ »Ø»·µØÖ· ĞèÒªºóÆÚÊµÏÖ
+		//TODO è¿™ä¸ªåœ°æ–¹æœ‰ç‚¹ç‰¹æ®Š å›ç¯åœ°å€ éœ€è¦åæœŸå®ç°
 		Err=Error_Invalid_Parameter;
 		goto IPv4_Tx_Pend_Exit2;
 	}
@@ -753,7 +753,7 @@ int IPv4_Tx_Send_DATA(
 	Net_IPv4_Packet_Heade_Flags_Type Flags;
 	Flags.DATA=0x0000;
 
-	//TODO ÒÔÏÂ²¿·ÖĞèÒªºóÆÚUDP²âÊÔ
+	//TODO ä»¥ä¸‹éƒ¨åˆ†éœ€è¦åæœŸUDPæµ‹è¯•
 
 	int Err=Error_OK;
 	while(Err==Error_OK)
@@ -828,12 +828,12 @@ int IPv4_Tx_Send_DATA(
 
 	return Err;
 }
-//Õâ¸öº¯ÊıÕ¨ÁË ÄÚÈİ¹ıÓÚ¸´ÔÓ
-//ÓĞ±ØÒª×¢ÊÍÒ»ÏÂ ÒÔÃâ»ØÍ·Ìî¿ÓµÄÊ±ºò ÕÒ²»µ½Í·
-//LinuxÖĞÓĞ¼¸¸ö·ÀÖ¹¹¥»÷µÄ²ßÂÔ ·ÖÆ¬²»ÄÜ´óÓÚ128¸ö ·ÖÆ¬Õ¼ÓÃµÄ¿Õ¼ä²»ÄÜ³¬¹ı256KB
-//Í¬Ò»¸öIPµØÖ·µÄÊı¾İ°ü ±»·ÖÆ¬ÊıÁ¿²»ÄÜ³¬¹ıÒ»¶¨Öµ ÓĞÁ½¸ö¼ÆÊıÆ÷ ÎÒÖ»ÊÇ¹ıÁËÒ»ÏÂ ²¢Ã»¿´Ê²Ã´ÒâË¼ ÔõÃ´ÍæµÄ
-//ÄÄÌìÉè±¸±»ÈË¹¥»÷ »òÕß³öÏÖÎÊÌâ ÔÚÊÊµ±¼Óµã²ßÂÔÏŞÖÆ°É
-//Ä¿Ç°²ßÂÔ¾ÍÊÇ ÏŞÖÆĞèÒª·ÖÆ¬µÄÊı¾İ°ü ¼ÓÉÏ¸öÊı ³¬¹ıÔòÉ¾³ı ×îÏÈµ½À´µÄÊı¾İ°ü ÔÙ¼ÓÉÏÒ»¸öµÈµ½ËùÓĞ·ÖÆ¬µ½ÆëµÄ³¬Ê±µÈ´ıÊ±¼ä
+//è¿™ä¸ªå‡½æ•°ç‚¸äº† å†…å®¹è¿‡äºå¤æ‚
+//æœ‰å¿…è¦æ³¨é‡Šä¸€ä¸‹ ä»¥å…å›å¤´å¡«å‘çš„æ—¶å€™ æ‰¾ä¸åˆ°å¤´
+//Linuxä¸­æœ‰å‡ ä¸ªé˜²æ­¢æ”»å‡»çš„ç­–ç•¥ åˆ†ç‰‡ä¸èƒ½å¤§äº128ä¸ª åˆ†ç‰‡å ç”¨çš„ç©ºé—´ä¸èƒ½è¶…è¿‡256KB
+//åŒä¸€ä¸ªIPåœ°å€çš„æ•°æ®åŒ… è¢«åˆ†ç‰‡æ•°é‡ä¸èƒ½è¶…è¿‡ä¸€å®šå€¼ æœ‰ä¸¤ä¸ªè®¡æ•°å™¨ æˆ‘åªæ˜¯è¿‡äº†ä¸€ä¸‹ å¹¶æ²¡çœ‹ä»€ä¹ˆæ„æ€ æ€ä¹ˆç©çš„
+//å“ªå¤©è®¾å¤‡è¢«äººæ”»å‡» æˆ–è€…å‡ºç°é—®é¢˜ åœ¨é€‚å½“åŠ ç‚¹ç­–ç•¥é™åˆ¶å§
+//ç›®å‰ç­–ç•¥å°±æ˜¯ é™åˆ¶éœ€è¦åˆ†ç‰‡çš„æ•°æ®åŒ… åŠ ä¸Šä¸ªæ•° è¶…è¿‡åˆ™åˆ é™¤ æœ€å…ˆåˆ°æ¥çš„æ•°æ®åŒ… å†åŠ ä¸Šä¸€ä¸ªç­‰åˆ°æ‰€æœ‰åˆ†ç‰‡åˆ°é½çš„è¶…æ—¶ç­‰å¾…æ—¶é—´
 int IPv4_Rx_Packing_DATA(
 		Net_Core_Device_Node_Type *P_Net_Node,
 		Net_IPv4_Packet_Heade_Type *P_IPv4_Packet_Heade,
@@ -849,11 +849,11 @@ int IPv4_Rx_Packing_DATA(
 
 	int Err=Error_OK;
 
-	//¼ì²éµ±Ç°Êı¾İ°üÊÇÍêÕûµÄ»¹ÊÇÒ»¸ö·ÖÆ¬
+	//æ£€æŸ¥å½“å‰æ•°æ®åŒ…æ˜¯å®Œæ•´çš„è¿˜æ˜¯ä¸€ä¸ªåˆ†ç‰‡
 	Net_IPv4_Packet_Heade_Flags_Type Flags;
 
 	Flags.DATA=UINT16_REVERSE(P_IPv4_Packet_Heade->Flags);
-	if(Flags.MF==0 && Flags.Offset==0)//µ±Ç°Êı¾İ°üÊÇµ¥°ü
+	if(Flags.MF==0 && Flags.Offset==0)//å½“å‰æ•°æ®åŒ…æ˜¯å•åŒ…
 	{
 		if(Out_DATA==Null || Out_Size==Null)
 		{
@@ -865,7 +865,7 @@ int IPv4_Rx_Packing_DATA(
 		return Net_IPv4_Packet_Single;
 	}
 
-	//¿ªÊ¼²Ù×÷¶ÓÁĞ »¥³âÒ»ÏÂ Ï£ÍûÊ±¼ä²»ÒªÌ«¾Ã
+	//å¼€å§‹æ“ä½œé˜Ÿåˆ— äº’æ–¥ä¸€ä¸‹ å¸Œæœ›æ—¶é—´ä¸è¦å¤ªä¹…
 	Err=Mutex_Wait(P_Net_Node->IPv4_DATA.Mutex_Rx,-1);
 	if(Err!=Error_OK)
 	{
@@ -876,13 +876,13 @@ int IPv4_Rx_Packing_DATA(
 
 	P_Rx_Node=P_Net_Node->IPv4_DATA.Rx_List.List.Head;
 
-	//TODO Õâ¸öµØ·½²éÕÒ È·ÊµºÜ·ÑÊ±¼ä linuxÀïÃæ²ÉÓÃ¹şÏ£·¨ ÎÒÊÇĞ´ÁËÍæÍæµÄ ÄÄÌì×ß¹·ÊºÔËÁË ÔÚÀ´ÓÅ»¯Õâ´úÂë
-	//Ä¿Ç°¾ÍÒ»¸ö¸öÕÒ°É Ê±¼äÊÇ³¤ÁËµã
+	//TODO è¿™ä¸ªåœ°æ–¹æŸ¥æ‰¾ ç¡®å®å¾ˆè´¹æ—¶é—´ linuxé‡Œé¢é‡‡ç”¨å“ˆå¸Œæ³• æˆ‘æ˜¯å†™äº†ç©ç©çš„ å“ªå¤©èµ°ç‹—å±è¿äº† åœ¨æ¥ä¼˜åŒ–è¿™ä»£ç 
+	//ç›®å‰å°±ä¸€ä¸ªä¸ªæ‰¾å§ æ—¶é—´æ˜¯é•¿äº†ç‚¹
 	while(P_Rx_Node!=Null)
 	{
 		P_Rx_Node_NEXT=P_Rx_Node->NEXT;
 
-		//²éÕÒÊı¾İ½Úµã
+		//æŸ¥æ‰¾æ•°æ®èŠ‚ç‚¹
 		if(memcmp(P_Rx_Node->SRC_IPv4_Address,P_IPv4_Packet_Heade->SRC_IPv4_Address,4)==0
 		&& memcmp(P_Rx_Node->DEST_IPv4_Address,P_IPv4_Packet_Heade->DEST_IPv4_Address,4)==0
 		&& P_Rx_Node->Identification==P_IPv4_Packet_Heade->Identification
@@ -901,16 +901,16 @@ int IPv4_Rx_Packing_DATA(
 //			{
 //				Err=Net_IPv4_Packet_Null;
 //			}
-			if(Err<Error_OK || Err==Net_IPv4_Packet_Multi)//ÒÑ¾­ÊÕ¼¯µ½ËùÓĞ·ÖÆ¬ ¿ªÊ¼×é×°ËùÓĞ·ÖÆ¬ »òÕß³öÏÖÁË´íÎó
+			if(Err<Error_OK || Err==Net_IPv4_Packet_Multi)//å·²ç»æ”¶é›†åˆ°æ‰€æœ‰åˆ†ç‰‡ å¼€å§‹ç»„è£…æ‰€æœ‰åˆ†ç‰‡ æˆ–è€…å‡ºç°äº†é”™è¯¯
 			{
-				//½«Õâ¸ö½Úµã´Ó¶ÓÁĞÖĞÉ¾³ı
+				//å°†è¿™ä¸ªèŠ‚ç‚¹ä»é˜Ÿåˆ—ä¸­åˆ é™¤
 				if(P_Rx_Node_LAST==Null || P_Rx_Node==P_Net_Node->IPv4_DATA.Rx_List.List.Head)
 				{
 					P_Net_Node->IPv4_DATA.Rx_List.List.Head=P_Rx_Node_NEXT;
 
-					if(P_Net_Node->IPv4_DATA.Rx_List.List.Head!=Null)//ÏÂÒ»¸ö»¹ÓĞ
+					if(P_Net_Node->IPv4_DATA.Rx_List.List.Head!=Null)//ä¸‹ä¸€ä¸ªè¿˜æœ‰
 					{
-						//ĞŞ²¹Ê±¼ä¶ÓÁĞ
+						//ä¿®è¡¥æ—¶é—´é˜Ÿåˆ—
 						if(P_Net_Node->IPv4_DATA.Rx_List.List.Head->TimeOut_1S>=0)
 						{
 							if(P_Rx_Node->TimeOut_1S>=0)
@@ -931,7 +931,7 @@ int IPv4_Rx_Packing_DATA(
 				}
 				if(P_Rx_Node_LAST!=Null && P_Rx_Node_NEXT!=Null)
 				{
-					//ĞŞ²¹Ê±¼ä¶ÓÁĞ
+					//ä¿®è¡¥æ—¶é—´é˜Ÿåˆ—
 					if(P_Rx_Node->TimeOut_1S>=0 && P_Rx_Node_NEXT->TimeOut_1S>=0)
 					{
 						P_Rx_Node_NEXT->TimeOut_1S=P_Rx_Node_NEXT->TimeOut_1S+P_Rx_Node->TimeOut_1S;
@@ -986,12 +986,12 @@ int IPv4_Rx_Packing_DATA(
 		P_Rx_Node=P_Rx_Node_NEXT;
 	}
 
-//Ã»ÓĞÕÒµ½
+//æ²¡æœ‰æ‰¾åˆ°
 
-	//³¬³ö¶ÓÁĞ×î´óÊıÁ¿
-	if(P_Net_Node->IPv4_DATA.Rx_List.Count>Net_IPv4I_DATA_Rx_List_Max_Count)
+	//è¶…å‡ºé˜Ÿåˆ—æœ€å¤§æ•°é‡
+	if(P_Net_Node->IPv4_DATA.Rx_List.Count>Net_IPv4_DATA_Rx_List_Max_Count)
 	{
-		//É¾³ı¶ÓÁĞÖĞ³¬Ê±Ê±¼ä¿ìµ½µÄ½Úµã
+		//åˆ é™¤é˜Ÿåˆ—ä¸­è¶…æ—¶æ—¶é—´å¿«åˆ°çš„èŠ‚ç‚¹
 
 		P_Rx_Node=P_Net_Node->IPv4_DATA.Rx_List.List.Head;
 
@@ -999,9 +999,9 @@ int IPv4_Rx_Packing_DATA(
 		{
 			P_Net_Node->IPv4_DATA.Rx_List.List.Head=P_Rx_Node->NEXT;
 
-			if(P_Net_Node->IPv4_DATA.Rx_List.List.Head!=Null)//ÏÂÒ»¸ö»¹ÓĞ
+			if(P_Net_Node->IPv4_DATA.Rx_List.List.Head!=Null)//ä¸‹ä¸€ä¸ªè¿˜æœ‰
 			{
-				//ĞŞ²¹Ê±¼ä¶ÓÁĞ
+				//ä¿®è¡¥æ—¶é—´é˜Ÿåˆ—
 				if(P_Net_Node->IPv4_DATA.Rx_List.List.Head->TimeOut_1S>=0)
 				{
 					if(P_Rx_Node->TimeOut_1S>=0)
@@ -1035,7 +1035,7 @@ int IPv4_Rx_Packing_DATA(
 	}
 
 
-	//Ìí¼ÓÒ»¸öĞÂ½Úµã
+	//æ·»åŠ ä¸€ä¸ªæ–°èŠ‚ç‚¹
 	P_Rx_Node=Memory_Malloc(sizeof(Net_IPv4_Rx_Node_Type));
 
 	if(P_Rx_Node==Null)
@@ -1061,12 +1061,12 @@ int IPv4_Rx_Packing_DATA(
 	P_Rx_Node->Size=0;
 	P_Rx_Node->Len=In_Size;
 
-	if(Flags.Offset==0)//µ±Ç°·ÖÆ¬ÊÇ·ñÎªµÚÒ»¸ö
+	if(Flags.Offset==0)//å½“å‰åˆ†ç‰‡æ˜¯å¦ä¸ºç¬¬ä¸€ä¸ª
 	{
 		P_Rx_Node->Head_Part=1;
 	}
 
-	if(Flags.MF==0)//µ±Ç°·ÖÆ¬ÊÇ·ñÎª×îºóÒ»¸ö
+	if(Flags.MF==0)//å½“å‰åˆ†ç‰‡æ˜¯å¦ä¸ºæœ€åä¸€ä¸ª
 	{
 		P_Rx_Node->Size=Flags.Offset*8+In_Size;
 		P_Rx_Node->End_Part=1;
@@ -1074,13 +1074,13 @@ int IPv4_Rx_Packing_DATA(
 
 	P_Net_Node->IPv4_DATA.Rx_List.Count++;
 
-	//Ìí¼ÓĞÂ½Úµãµ½¶ÓÁĞÖĞ
+	//æ·»åŠ æ–°èŠ‚ç‚¹åˆ°é˜Ÿåˆ—ä¸­
 
 	Net_IPv4_Rx_Node_Type *P_Temp_Rx_Node=Null;
 
 	P_Temp_Rx_Node=P_Net_Node->IPv4_DATA.Rx_List.List.Head;
 
-	//Ê±¼ä²î·Ö¶ÓÁĞ
+	//æ—¶é—´å·®åˆ†é˜Ÿåˆ—
 	while(P_Temp_Rx_Node!=Null)
 	{
 		P_Rx_Node->TimeOut_1S=P_Rx_Node->TimeOut_1S-P_Temp_Rx_Node->TimeOut_1S;
@@ -1144,9 +1144,9 @@ int IPv4_Rx_Node_DATA_Add(
 	return Error_OK;
 }
 
-//Õâ¸öIP×é°üº¯Êı ÓĞµã¸´ÔÓ
-//Õâ¸öº¯ÊıÔÚĞ´µÄ¹ı³ÌÖĞ ²»Öª²»¾õ±»ÓÅ»¯ÁËÒ»´Î ×¢ÊÍÒÑ¾­²»ÊÇÔ­À´¿ÉÄÜ±í´ïµÄÒâË¼ÁË ËùÒÔ²»Òª±»×¢ÊÍÎóµ¼
-//LinuxÖĞ·ÀÖ¹¹¥»÷ ²ÉÓÃÒ»¸öÊÖ¶ÎÊÇÏŞÖÆ·ÖÆ¬¸öÊı²»ÄÜ´óÓÚ128¸ö ÎÒÕâÃ»ÓĞÊµÏÖ
+//è¿™ä¸ªIPç»„åŒ…å‡½æ•° æœ‰ç‚¹å¤æ‚
+//è¿™ä¸ªå‡½æ•°åœ¨å†™çš„è¿‡ç¨‹ä¸­ ä¸çŸ¥ä¸è§‰è¢«ä¼˜åŒ–äº†ä¸€æ¬¡ æ³¨é‡Šå·²ç»ä¸æ˜¯åŸæ¥å¯èƒ½è¡¨è¾¾çš„æ„æ€äº† æ‰€ä»¥ä¸è¦è¢«æ³¨é‡Šè¯¯å¯¼
+//Linuxä¸­é˜²æ­¢æ”»å‡» é‡‡ç”¨ä¸€ä¸ªæ‰‹æ®µæ˜¯é™åˆ¶åˆ†ç‰‡ä¸ªæ•°ä¸èƒ½å¤§äº128ä¸ª æˆ‘è¿™æ²¡æœ‰å®ç°
 int IPv4_Rx_Node_Insert_DATA(
 		Net_IPv4_Rx_Node_Type *P_Rx_Node,
 		Net_IPv4_Packet_Heade_Flags_Type Flags,
@@ -1157,7 +1157,7 @@ int IPv4_Rx_Node_Insert_DATA(
 	{
 		return Error_Invalid_Parameter;
 	}
-	uint16_t Index=Flags.Offset*8;//¸ù¾İÆ«ÒÆÁ¿¼ÆËã·ÖÆ¬µØÖ·
+	uint16_t Index=Flags.Offset*8;//æ ¹æ®åç§»é‡è®¡ç®—åˆ†ç‰‡åœ°å€
 
 	int Err=Error_OK;
 
@@ -1171,30 +1171,30 @@ int IPv4_Rx_Node_Insert_DATA(
 		//goto IPv4_Rx_Node_Insert_DATA_Exit;
 	}
 
-	if(Index==0)//µ±Ç°·ÖÆ¬ÊÇ·ñÎªµÚÒ»¸ö
+	if(Index==0)//å½“å‰åˆ†ç‰‡æ˜¯å¦ä¸ºç¬¬ä¸€ä¸ª
 	{
 		P_Rx_Node->Head_Part=1;
 	}
 
-	if(Flags.MF==0)//µ±Ç°·ÖÆ¬ÊÇ·ñÎª×îºóÒ»¸ö
+	if(Flags.MF==0)//å½“å‰åˆ†ç‰‡æ˜¯å¦ä¸ºæœ€åä¸€ä¸ª
 	{
 		P_Rx_Node->Size=Index+Size;
 		P_Rx_Node->End_Part=1;
 	}
 	uint16_t Node_DATA_Size=0;
 
-	//²éÕÒÊı¾İ¿é
+	//æŸ¥æ‰¾æ•°æ®å—
 	while(P_Rx_Node_DATA!=Null)
 	{
 		P_Rx_Node_DATA_NEXT=P_Rx_Node_DATA->NEXT;
 
-		if(Index==P_Rx_Node_DATA->Address)//ÊÕµ½µÄÊı¾İ¿éºÍ¶ÓÁĞÖĞÊı¾İÓĞÖØµş
+		if(Index==P_Rx_Node_DATA->Address)//æ”¶åˆ°çš„æ•°æ®å—å’Œé˜Ÿåˆ—ä¸­æ•°æ®æœ‰é‡å 
 		{
-			if(Size<=P_Rx_Node_DATA->Size)//ÊÕµ½µÄÊı¾İÍêÈ«ºÍ¶ÓÁĞÖĞÖØµşÔò¶ªÆú
+			if(Size<=P_Rx_Node_DATA->Size)//æ”¶åˆ°çš„æ•°æ®å®Œå…¨å’Œé˜Ÿåˆ—ä¸­é‡å åˆ™ä¸¢å¼ƒ
 			{
 				goto IPv4_Rx_Node_Insert_DATA_Exit_1;
 			}
-			else//»¹¶à³öÒ»²¿·Ö ²»ÊÇÖØµşµÄ
+			else//è¿˜å¤šå‡ºä¸€éƒ¨åˆ† ä¸æ˜¯é‡å çš„
 			{
 				DATA=&DATA[P_Rx_Node_DATA->Size];
 				Size=Size-P_Rx_Node_DATA->Size;
@@ -1203,17 +1203,17 @@ int IPv4_Rx_Node_Insert_DATA(
 				continue;
 			}
 		}
-		else //¶ÓÁĞµÚÒ»¸öÊı¾İ¿é
+		else //é˜Ÿåˆ—ç¬¬ä¸€ä¸ªæ•°æ®å—
 		{
-			if(Index<P_Rx_Node_DATA->Address)//ÊÕµ½µÄÊı¾İ¿éÔÚ¶ÓÁĞµÚÒ»¸öÊı¾İ¿éÖ®Ç°
+			if(Index<P_Rx_Node_DATA->Address)//æ”¶åˆ°çš„æ•°æ®å—åœ¨é˜Ÿåˆ—ç¬¬ä¸€ä¸ªæ•°æ®å—ä¹‹å‰
 			{
 
-				if((Index+Size)<=P_Rx_Node_DATA->Address)//ÊÕµ½µÄÊı¾İ¿éÍêÕû±£´æ
+				if((Index+Size)<=P_Rx_Node_DATA->Address)//æ”¶åˆ°çš„æ•°æ®å—å®Œæ•´ä¿å­˜
 				{
 					Node_DATA_Size=Size;
 					Size=0;
 				}
-				else//ÊÕµ½µÄÊı¾İ¿éÓĞÖØµş²¿·Ö ÏÈ±£´æ²»ÖØµş²¿·Ö
+				else//æ”¶åˆ°çš„æ•°æ®å—æœ‰é‡å éƒ¨åˆ† å…ˆä¿å­˜ä¸é‡å éƒ¨åˆ†
 				{
 					Node_DATA_Size=P_Rx_Node_DATA->Address-Index;
 					Size=Size-Node_DATA_Size;
@@ -1234,7 +1234,7 @@ int IPv4_Rx_Node_Insert_DATA(
 				{
 					P_Rx_Node_DATA_LAST->NEXT=P_Temp_Node_DATA;
 				}
-				P_Rx_Node->Len=P_Rx_Node->Len+Node_DATA_Size;//ÀÛ¼ÓÊÕµ½µÄÊı¾İ¸öÊı
+				P_Rx_Node->Len=P_Rx_Node->Len+Node_DATA_Size;//ç´¯åŠ æ”¶åˆ°çš„æ•°æ®ä¸ªæ•°
 
 
 				if(Size==0)
@@ -1251,15 +1251,15 @@ int IPv4_Rx_Node_Insert_DATA(
 					continue;
 				}
 			}
-			else if(P_Rx_Node_DATA->Address<Index)//ÊÕµ½µÄÊı¾İ¿éÔÚ¶ÓÁĞÖĞµÚÒ»¸öÊı¾İ¿éÖ®ºó
+			else if(P_Rx_Node_DATA->Address<Index)//æ”¶åˆ°çš„æ•°æ®å—åœ¨é˜Ÿåˆ—ä¸­ç¬¬ä¸€ä¸ªæ•°æ®å—ä¹‹å
 			{
-				if(Index<(P_Rx_Node_DATA->Address+P_Rx_Node_DATA->Size))//ÇÒÔÚ¶ÓÁĞÖĞµÚÒ»¸öÊı¾İ¿éÖĞ
+				if(Index<(P_Rx_Node_DATA->Address+P_Rx_Node_DATA->Size))//ä¸”åœ¨é˜Ÿåˆ—ä¸­ç¬¬ä¸€ä¸ªæ•°æ®å—ä¸­
 				{
-					if((Index+Size)<=(P_Rx_Node_DATA->Address+P_Rx_Node_DATA->Size))//ÊÕµ½µÄÊı¾İ¿éÍêÈ«ÖØµş¶ÓÁĞÖĞÊı¾İ¿é
+					if((Index+Size)<=(P_Rx_Node_DATA->Address+P_Rx_Node_DATA->Size))//æ”¶åˆ°çš„æ•°æ®å—å®Œå…¨é‡å é˜Ÿåˆ—ä¸­æ•°æ®å—
 					{
 						goto IPv4_Rx_Node_Insert_DATA_Exit_1;
 					}
-					else//È¥³ıÖØµş²¿·Ö
+					else//å»é™¤é‡å éƒ¨åˆ†
 					{
 						Node_DATA_Size=(P_Rx_Node_DATA->Address+P_Rx_Node_DATA->Size)-Index;
 
@@ -1272,10 +1272,10 @@ int IPv4_Rx_Node_Insert_DATA(
 						continue;
 					}
 				}
-				else//²»ÔÚ¶ÓÁĞÖĞµÄµÚÒ»¸öÊı¾İ¿éÖĞ
+				else//ä¸åœ¨é˜Ÿåˆ—ä¸­çš„ç¬¬ä¸€ä¸ªæ•°æ®å—ä¸­
 				{
 
-					if(P_Rx_Node_DATA_NEXT==Null)//¶ÓÁĞºóÃæÃ»ÓĞÊı¾İ¿é Ôò±£´æÕû¸öÊÕµ½Êı¾İ
+					if(P_Rx_Node_DATA_NEXT==Null)//é˜Ÿåˆ—åé¢æ²¡æœ‰æ•°æ®å— åˆ™ä¿å­˜æ•´ä¸ªæ”¶åˆ°æ•°æ®
 					{
 
 						if((Err=IPv4_Rx_Node_DATA_Add(&P_Temp_Node_DATA,Index,DATA,Size))!=Error_OK)
@@ -1286,21 +1286,21 @@ int IPv4_Rx_Node_Insert_DATA(
 						P_Rx_Node_DATA->NEXT=P_Temp_Node_DATA;
 						P_Temp_Node_DATA->NEXT=Null;
 
-						P_Rx_Node->Len=P_Rx_Node->Len+Size;//ÀÛ¼ÓÊÕµ½µÄÊı¾İ¸öÊı
+						P_Rx_Node->Len=P_Rx_Node->Len+Size;//ç´¯åŠ æ”¶åˆ°çš„æ•°æ®ä¸ªæ•°
 
 						goto IPv4_Rx_Node_Insert_DATA_Exit_1;
 
 					}
-					else//¶ÓÁĞºóÃæ»¹ÓĞÊı¾İ¿é
+					else//é˜Ÿåˆ—åé¢è¿˜æœ‰æ•°æ®å—
 					{
-						if(Index<P_Rx_Node_DATA_NEXT->Address)//ÔÚºóÃæÊı¾İÖ®Ç°
+						if(Index<P_Rx_Node_DATA_NEXT->Address)//åœ¨åé¢æ•°æ®ä¹‹å‰
 						{
-							if((Index+Size)<=P_Rx_Node_DATA_NEXT->Address)//ÊÕµ½µÄÊı¾İ¿éÍêÕû±£´æ
+							if((Index+Size)<=P_Rx_Node_DATA_NEXT->Address)//æ”¶åˆ°çš„æ•°æ®å—å®Œæ•´ä¿å­˜
 							{
 								Node_DATA_Size=Size;
 								Size=0;
 							}
-							else//ÊÕµ½µÄÊı¾İ¿éÓĞÖØµş²¿·Ö ÏÈ±£´æ²»ÖØµş²¿·Ö
+							else//æ”¶åˆ°çš„æ•°æ®å—æœ‰é‡å éƒ¨åˆ† å…ˆä¿å­˜ä¸é‡å éƒ¨åˆ†
 							{
 								Node_DATA_Size=P_Rx_Node_DATA_NEXT->Address-Index;
 								Size=Size-Node_DATA_Size;
@@ -1314,7 +1314,7 @@ int IPv4_Rx_Node_Insert_DATA(
 							P_Temp_Node_DATA->NEXT=P_Rx_Node_DATA_NEXT;
 							P_Rx_Node_DATA->NEXT=P_Temp_Node_DATA;
 
-							P_Rx_Node->Len=P_Rx_Node->Len+Node_DATA_Size;//ÀÛ¼ÓÊÕµ½µÄÊı¾İ¸öÊı
+							P_Rx_Node->Len=P_Rx_Node->Len+Node_DATA_Size;//ç´¯åŠ æ”¶åˆ°çš„æ•°æ®ä¸ªæ•°
 
 
 							if(Size==0)
@@ -1346,7 +1346,7 @@ int IPv4_Rx_Node_Insert_DATA(
 	}
 IPv4_Rx_Node_Insert_DATA_Exit_1:
 
-	//³­×ÔLinux´úÂëµÄÒ»¶Î»°Ìõ¼ş Âú×ãÈı¸öÌõ¼ş ÔòÈÏÎªÊÇÍêÕûµÄÒ»¸öÊı¾İ°ü
+	//æŠ„è‡ªLinuxä»£ç çš„ä¸€æ®µè¯æ¡ä»¶ æ»¡è¶³ä¸‰ä¸ªæ¡ä»¶ åˆ™è®¤ä¸ºæ˜¯å®Œæ•´çš„ä¸€ä¸ªæ•°æ®åŒ…
 	if(P_Rx_Node->Head_Part==1 && P_Rx_Node->End_Part==1 && P_Rx_Node->Size==P_Rx_Node->Len)
 	{
 		Err=Net_IPv4_Packet_Multi;

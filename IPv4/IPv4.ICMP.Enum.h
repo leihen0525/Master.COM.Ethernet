@@ -1,7 +1,7 @@
 /*
  * IPv4.ICMP.Enum.h
  *
- *  Created on: 2019Äê7ÔÂ17ÈÕ
+ *  Created on: 2019å¹´7æœˆ17æ—¥
  *      Author: Master.HE
  */
 
@@ -10,15 +10,15 @@
 
 typedef enum
 {
-	Net_IPv4_ICMP_Type_Echo_Reply_Message					=0,		//»ØÏÔÓ¦´ğ
-	Net_IPv4_ICMP_Type_Destination_Unreachable_Message		=3,		//Ä¿µÄ²»¿É´ï
-	Net_IPv4_ICMP_Type_Source_Quench_Message				=4,		//Ô´ÀäÈ´
-	Net_IPv4_ICMP_Type_Redirect_Message						=5,		//ÖØ¶¨Ïò
-	Net_IPv4_ICMP_Type_Echo_Message							=8,		//ÇëÇó»ØÏÔ
-	Net_IPv4_ICMP_Type_Time_Exceeded_Message				=11,	//³¬Ê±
-	Net_IPv4_ICMP_Type_Parameter_Problem_Message			=12,	//²ÎÊı´íÎó±¨ÎÄ
-	Net_IPv4_ICMP_Type_Timestamp_Message					=13,	//Ê±¼ä´ÁÇëÇó
-	Net_IPv4_ICMP_Type_Timestamp_Timestamp_Reply_Message	=14,	//Ê±¼ä´ÁÓ¦´ğ
+	Net_IPv4_ICMP_Type_Echo_Reply_Message					=0,		//å›æ˜¾åº”ç­”
+	Net_IPv4_ICMP_Type_Destination_Unreachable_Message		=3,		//ç›®çš„ä¸å¯è¾¾
+	Net_IPv4_ICMP_Type_Source_Quench_Message				=4,		//æºå†·å´
+	Net_IPv4_ICMP_Type_Redirect_Message						=5,		//é‡å®šå‘
+	Net_IPv4_ICMP_Type_Echo_Message							=8,		//è¯·æ±‚å›æ˜¾
+	Net_IPv4_ICMP_Type_Time_Exceeded_Message				=11,	//è¶…æ—¶
+	Net_IPv4_ICMP_Type_Parameter_Problem_Message			=12,	//å‚æ•°é”™è¯¯æŠ¥æ–‡
+	Net_IPv4_ICMP_Type_Timestamp_Message					=13,	//æ—¶é—´æˆ³è¯·æ±‚
+	Net_IPv4_ICMP_Type_Timestamp_Timestamp_Reply_Message	=14,	//æ—¶é—´æˆ³åº”ç­”
 
 }Net_IPv4_ICMP_Type;
 

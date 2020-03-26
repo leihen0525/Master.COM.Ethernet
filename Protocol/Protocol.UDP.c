@@ -1,7 +1,7 @@
 /*
  * Protocol.UDP.c
  *
- *  Created on: 2019Äê7ÔÂ17ÈÕ
+ *  Created on: 2019å¹´7æœˆ17æ—¥
  *      Author: Master.HE
  */
 #include <string.h>
@@ -18,7 +18,7 @@
 
 #include "Protocol.UDP.h"
 
-
+#include "Protocol.PORT.h"
 
 uint8_t DATA1[4500]={0};
 
@@ -28,7 +28,12 @@ int Protocol_UDP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_UDP_DAT
 	{
 		return Error_Invalid_Parameter;
 	}
+	int Err;
 
+	if((Err=Protocol_PORT_Init(&P_Protocol_UDP_DATA->PORT_DATA))!=Error_OK)
+	{
+		return Err;
+	}
 
 	return Error_OK;
 }

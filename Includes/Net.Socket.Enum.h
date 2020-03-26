@@ -1,7 +1,7 @@
 /*
  * Net.Socket.Enum.h
  *
- *  Created on: 2019Äê12ÔÂ19ÈÕ
+ *  Created on: 2019å¹´12æœˆ19æ—¥
  *      Author: Master.HE
  */
 
@@ -11,7 +11,7 @@
 
 typedef enum
 {
-	Net_Socket_Domain_AF_UNIX			=0,	/* standardized name for AF_LOCAL */
+	Net_Socket_Domain_AF_LOCAL			=0,	/* standardized name for AF_LOCAL */
 	Net_Socket_Domain_AF_INET,				/* internetwork: UDP, TCP, etc. */
 	Net_Socket_Domain_AF_INET6,				/* IPv6 */
 

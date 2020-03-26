@@ -1,7 +1,7 @@
 /*
  * Core.c
  *
- *  Created on: 2019Äê7ÔÂ15ÈÕ
+ *  Created on: 2019å¹´7æœˆ15æ—¥
  *      Author: Master.HE
  */
 #include "Error.h"
@@ -18,8 +18,8 @@
 #include "IPv4/IPv4.h"
 #include "Protocol/Protocol.TCP.h"
 #include "Protocol/Protocol.UDP.h"
-#include "Session/Session.h"
-#include "Socket/Socket.h"
+//#include "Session/Session.h"
+//#include "Socket/Socket.h"
 
 
 #include "Core.h"
@@ -251,7 +251,7 @@ uint16_t Net_Core_CheckSum(uint16_t * buffer1, uint32_t size1,uint16_t * buffer2
 	uint16_t tmp16;
 
 
-	//1.¼ÆËãÐ£ÑéºÍ
+	//1.è®¡ç®—æ ¡éªŒå’Œ
 	while(size1 > 1)
 	{
 		tmp16 = *buffer1 ++;
@@ -274,7 +274,7 @@ uint16_t Net_Core_CheckSum(uint16_t * buffer1, uint32_t size1,uint16_t * buffer2
 		sum  += UINT16_REVERSE(*(uint8_t*)buffer2);
 	}
 
-	//2.½«32Î»Êý×ª»»³É16
+	//2.å°†32ä½æ•°è½¬æ¢æˆ16
 	while(sum>>16)
 	{
 		sum = (sum>>16) + (sum & 0x0000FFFF);

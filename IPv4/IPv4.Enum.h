@@ -1,7 +1,7 @@
 /*
  * IPv4.Enum.h
  *
- *  Created on: 2019Äê7ÔÂ19ÈÕ
+ *  Created on: 2019å¹´7æœˆ19æ—¥
  *      Author: Master.HE
  */
 
@@ -18,19 +18,19 @@ typedef enum
 
 typedef enum
 {
-	Net_IPv4_Address_Type_Invalid			=0,	//ÎŞĞ§µØÖ·
-	Net_IPv4_Address_Type_SubNet,				//Í¬Ò»¸ö×ÓÍøµØÖ·
-	Net_IPv4_Address_Type_ExtraNet,				//ÍâÍøµØÖ·
-	Net_IPv4_Address_Type_SelfAddress,			//×ÔÉíµØÖ·
-	Net_IPv4_Address_Type_BroadcastAddress,		//¹ã²¥µØÖ·
+	Net_IPv4_Address_Type_Invalid			=0,	//æ— æ•ˆåœ°å€
+	Net_IPv4_Address_Type_SubNet,				//åŒä¸€ä¸ªå­ç½‘åœ°å€
+	Net_IPv4_Address_Type_ExtraNet,				//å¤–ç½‘åœ°å€
+	Net_IPv4_Address_Type_SelfAddress,			//è‡ªèº«åœ°å€
+	Net_IPv4_Address_Type_BroadcastAddress,		//å¹¿æ’­åœ°å€
 
 }Net_IPv4_Address_Type;
 
 typedef enum
 {
-	Net_IPv4_Packet_Null					=0, //¿Õ°ü»òÕß²»ÍêÕû
-	Net_IPv4_Packet_Single,						//µ¥°ü
-	Net_IPv4_Packet_Multi,						//¶à°ü
+	Net_IPv4_Packet_Null					=0, //ç©ºåŒ…æˆ–è€…ä¸å®Œæ•´
+	Net_IPv4_Packet_Single,						//å•åŒ…
+	Net_IPv4_Packet_Multi,						//å¤šåŒ…
 }Net_IPv4_Packet_Type;
 
 #endif /* IPV4_ENUM_H_ */

@@ -1,7 +1,7 @@
 /*
  * Net.Socket.h
  *
- *  Created on: 2019Äê7ÔÂ15ÈÕ
+ *  Created on: 2019å¹´7æœˆ15æ—¥
  *      Author: Master.HE
  */
 
@@ -53,5 +53,18 @@ int Net_GetSockname(int Socket, Net_Socket_Address_DATA_Type *Addr);
 // arpa/inet.h
 unsigned long Net_Inet_Addr(const char *Cp);
 */
+
+
+
+
+//
+unsigned long Net_Inet_Addr(const char *cp);
+
+
+
+
+
+
+
 
 #endif /* NET_SOCKET_H_ */
