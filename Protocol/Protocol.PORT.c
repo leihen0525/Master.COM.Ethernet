@@ -30,7 +30,7 @@ int Protocol_PORT_Init(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA)
 }
 
 //增加一个节点进链表 进行自动排序
-int Protocol_PORT_Add(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,uint16_t PORT,uint16_t Flag)
+int Protocol_PORT_Add(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,uint16_t PORT,Net_Protocol_PORT_Node_Flag_Type Flag)
 {
 	if(P_Protocol_PORT_DATA==Null)
 	{
@@ -41,7 +41,7 @@ int Protocol_PORT_Add(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,uint16_t
 }
 
 //
-int Protocol_PORT_New(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,uint16_t Flag,uint16_t Begin_PORT,uint16_t End_PORT)
+int Protocol_PORT_New(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,Net_Protocol_PORT_Node_Flag_Type Flag,uint16_t Begin_PORT,uint16_t End_PORT)
 {
 	if(P_Protocol_PORT_DATA==Null || Begin_PORT>End_PORT)
 	{
@@ -101,7 +101,7 @@ int Protocol_PORT_Del(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,uint16_t
 
 }
 
-int Protocol_PORT_Find(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,uint16_t PORT,uint16_t *Flag)
+int Protocol_PORT_Find(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,uint16_t PORT,Net_Protocol_PORT_Node_Flag_Type *Flag)
 {
 	if(P_Protocol_PORT_DATA==Null)
 	{
@@ -143,7 +143,7 @@ static int Protocol_PORT_List_Init(Net_Protocol_PORT_List_Node_Type *P_Protocol_
 
 }
 //增加一个节点进链表 进行自动排序
-static int Protocol_PORT_List_Add(Net_Protocol_PORT_List_Node_Type *P_Protocol_PORT_List_DATA,uint16_t PORT,uint16_t Flag)
+static int Protocol_PORT_List_Add(Net_Protocol_PORT_List_Node_Type *P_Protocol_PORT_List_DATA,uint16_t PORT,Net_Protocol_PORT_Node_Flag_Type Flag)
 {
 	if(P_Protocol_PORT_List_DATA==Null || PORT>Net_Protocol_PORT_Hash_Sub_Potr_Mask)
 	{
@@ -237,7 +237,7 @@ static int Protocol_PORT_List_Add(Net_Protocol_PORT_List_Node_Type *P_Protocol_P
 }
 
 //
-static int Protocol_PORT_List_New(Net_Protocol_PORT_List_Node_Type *P_Protocol_PORT_List_DATA,uint16_t Flag,uint16_t Begin_PORT,uint16_t End_PORT)
+static int Protocol_PORT_List_New(Net_Protocol_PORT_List_Node_Type *P_Protocol_PORT_List_DATA,Net_Protocol_PORT_Node_Flag_Type Flag,uint16_t Begin_PORT,uint16_t End_PORT)
 {
 	if(P_Protocol_PORT_List_DATA==Null || Begin_PORT>End_PORT || Begin_PORT>Net_Protocol_PORT_Hash_Sub_Potr_Mask || End_PORT>Net_Protocol_PORT_Hash_Sub_Potr_Mask)
 	{
@@ -355,7 +355,7 @@ static int Protocol_PORT_List_Del(Net_Protocol_PORT_List_Node_Type *P_Protocol_P
 
 }
 
-static int Protocol_PORT_List_Find(Net_Protocol_PORT_List_Node_Type *P_Protocol_PORT_List_DATA,uint16_t PORT,uint16_t *Flag)
+static int Protocol_PORT_List_Find(Net_Protocol_PORT_List_Node_Type *P_Protocol_PORT_List_DATA,uint16_t PORT,Net_Protocol_PORT_Node_Flag_Type *Flag)
 {
 	if(P_Protocol_PORT_List_DATA==Null || PORT>Net_Protocol_PORT_Hash_Sub_Potr_Mask)
 	{

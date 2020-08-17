@@ -25,11 +25,12 @@ extern Net_Core_DATA_Type Net_Core_DATA;
 int Net_Core_Device_Register(
 		Net_Device_Type Type,
 		bool DHCP,
-		Net_Device_IP_Config *P_IP_Config,
+		const Net_Device_Ethernet_Config_Type *P_Ethernet_Config,
+		const Net_Device_IP_Config_Type *P_IP_Config,
 		const Net_Device_OPS_Type *P_OPS)
 {
 
-	if(P_OPS==Null || Type>=Net_Device_Type_End || (DHCP!=false && P_IP_Config==Null))
+	if(P_OPS==Null || Type>=Net_Device_Type_End || P_Ethernet_Config==Null || (DHCP!=false && P_IP_Config==Null))
 	{
 		return Error_Invalid_Parameter;
 	}
@@ -57,8 +58,9 @@ int Net_Core_Device_Register(
 
 	if(DHCP==false)
 	{
-		memcpy(&Temp_Node->IP_Config,P_IP_Config,sizeof(Net_Device_IP_Config));
+		memcpy(&Temp_Node->IP_Config,P_IP_Config,sizeof(Net_Device_IP_Config_Type));
 	}
+	Temp_Node->P_Ethernet_Config=P_Ethernet_Config;
 	Temp_Node->P_OPS=P_OPS;
 
 
@@ -66,8 +68,8 @@ int Net_Core_Device_Register(
 	int Err;
 	Temp_Node->Open=false;
 
-	Temp_Node->Rx_DATA=Memory_Malloc(Temp_Node->P_OPS->HEADER+Temp_Node->P_OPS->MTU);
-	if(Temp_Node->Rx_DATA==Null)
+	Temp_Node->P_Rx_DATA=Memory_Malloc(Temp_Node->P_OPS->HEADER+Temp_Node->P_OPS->MTU);
+	if(Temp_Node->P_Rx_DATA==Null)
 	{
 		return Error_Allocation_Memory_Failed;
 	}

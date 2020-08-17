@@ -20,7 +20,25 @@ typedef struct
 		uint8_t Default_Gateway[4];
 	}IPv4;
 
-}Net_Device_IP_Config;
+	struct
+	{
+		uint8_t IP_Address[16];
+		uint8_t SubNet_Mask[16];
+		uint8_t Default_Gateway[16];
+	}IPv6;
+
+}Net_Device_IP_Config_Type;
+
+typedef struct
+{
+	struct
+	{
+		uint16_t Default_MSS;
+		uint16_t MSS;
+		bool SACK_Premitted;
+	}TCP;
+
+}Net_Device_Ethernet_Config_Type;
 
 
 typedef struct

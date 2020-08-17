@@ -1,7 +1,7 @@
 /*
  * Net.Library.c
  *
- *  Created on: 2020Äê1ÔÂ21ÈÕ
+ *  Created on: 2020å¹´1æœˆ21æ—¥
  *      Author: Master.HE
  */
 #include "Core/Core.Define.h"
@@ -18,8 +18,8 @@ unsigned long Net_Inet_Addr(const char *cp)
 	return 0xFFFFFFFF;
 }
 
-//ÏÂÃæÕâ¸öº¯ÊıÊÇÎÒ³­À´µÄºÍprintfº¯Êı´¦ÀíÊÖ·¨Ò»ÖÂ
-//³ö´¦ rtems-4.11.3\c\src\lib\libbsp\arm\nds\dswifi\arm9\source\sgIP_DNS.c (4 hits)
+//ä¸‹é¢è¿™ä¸ªå‡½æ•°æ˜¯æˆ‘æŠ„æ¥çš„å’Œprintfå‡½æ•°å¤„ç†æ‰‹æ³•ä¸€è‡´
+//å‡ºå¤„ rtems-4.11.3\c\src\lib\libbsp\arm\nds\dswifi\arm9\source\sgIP_DNS.c (4 hits)
 int sgIP_DNS_isipaddress(const char * name, unsigned long * ipdest)
 {
 	int i,j,t,ndot;

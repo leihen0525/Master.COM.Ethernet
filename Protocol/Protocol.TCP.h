@@ -25,4 +25,20 @@ void Protocol_TCP_Handle_Rx(
 		uint8_t *Protocol_TCP_Packet,
 		uint16_t Protocol_TCP_Packet_Size);
 
+int Protocol_TCP_Tx(
+		Net_Protocol_IP_Type IP_Type,
+		Net_Core_Device_Node_Type *P_Net_Node,
+		uint8_t *DEST_IP_Address,
+		uint16_t SRC_PORT,
+		uint16_t DEST_PORT,
+		uint32_t ISN,
+		uint32_t ACKN,
+		Net_Protocol_TCP_Packet_Heade_Flags_Type Flags,
+		uint16_t Windows,
+		uint16_t Urgent_Pointer,
+		uint8_t *Option,
+		uint16_t Option_Size,
+		uint8_t *DATA,
+		uint16_t DATA_Size);
+
 #endif /* PROTOCOL_TCP_H_ */

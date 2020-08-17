@@ -124,7 +124,7 @@ __task void Net_Core_Task_RX(void *Args)
 
 	while(1)
 	{
-		Err=Net_Node->P_OPS->Read(Net_Node->Rx_DATA,Net_Node->P_OPS->HEADER+Net_Node->P_OPS->MTU,500);
+		Err=Net_Node->P_OPS->Read(Net_Node->P_Rx_DATA,Net_Node->P_OPS->HEADER+Net_Node->P_OPS->MTU,500);
 
 		if(Err==Error_OK)
 		{
@@ -132,7 +132,7 @@ __task void Net_Core_Task_RX(void *Args)
 			{
 				case Net_Device_Ethernet:
 				{
-					Net_Core_Ethernet_Handle_Rx(Net_Node,Net_Node->Rx_DATA);
+					Net_Core_Ethernet_Handle_Rx(Net_Node,Net_Node->P_Rx_DATA);
 				}break;
 
 				default:

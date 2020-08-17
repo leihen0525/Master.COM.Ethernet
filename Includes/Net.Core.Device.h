@@ -15,7 +15,8 @@
 int Net_Core_Device_Register(
 		Net_Device_Type Type,
 		bool DHCP,
-		Net_Device_IP_Config *P_IP_Config,
+		const Net_Device_Ethernet_Config_Type *P_Ethernet_Config,
+		const Net_Device_IP_Config_Type *P_IP_Config,
 		const Net_Device_OPS_Type *P_OPS);
 
 

@@ -15,16 +15,16 @@
 
 typedef struct
 {
-	union
-	{
+	//union
+	//{
 		uint8_t SRC_IPv4_Address[4];
-		uint32_t _SRC_IPv4_Address;
-	};
-	union
-	{
+		//uint32_t _SRC_IPv4_Address;
+	//};
+	//union
+	//{
 		uint8_t DEST_IPv4_Address[4];
-		uint32_t _DEST_IPv4_Address;
-	};
+		//uint32_t _DEST_IPv4_Address;
+	//};
 
 	uint8_t mbz;
 

@@ -27,10 +27,11 @@ typedef struct Net_Core_Device_Node
 
 
 	bool Open;
-	uint8_t *Rx_DATA;
+	uint8_t *P_Rx_DATA;
 
 	bool DHCP;
-	Net_Device_IP_Config IP_Config;
+
+	Net_Device_IP_Config_Type IP_Config;
 
 	Net_IPv4_ARP_DATA_Type ARP_DATA;
 	Net_IPv4_DATA_Type IPv4_DATA;
@@ -39,6 +40,8 @@ typedef struct Net_Core_Device_Node
 	Net_Protocol_UDP_DATA_Type Protocol_UDP_DATA;
 
 	//Net_Session_DATA_Type Session_DATA;
+
+	const Net_Device_Ethernet_Config_Type *P_Ethernet_Config;
 
 	const Net_Device_OPS_Type *P_OPS;
 

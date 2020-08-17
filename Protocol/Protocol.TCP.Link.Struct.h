@@ -9,39 +9,62 @@
 #define PROTOCOL_TCP_LINK_STRUCT_H_
 
 #include "Master.Stdint.h"
+#include "Protocol.Enum.h"
 
 #include "Protocol.TCP.Link.Enum.h"
 
-
-typedef struct Net_Protocol_TCP_Link_Node_DATA
+typedef union
 {
-	uint32_t Dest_IPv4;
-
-	uint16_t Dest_PORT;
-
-	uint16_t Local_PORT;
-
-	uint32_t ISN;
-
-	Net_Protocol_TCP_Link_Condition_Type Condition;
+	uint16_t DATA;
+	struct
+	{
+		uint16_t Server							:1;
+	};
+}Net_Protocol_TCP_Link_Node_Flag_Type;
 
 
+typedef struct
+{
+	Net_Protocol_TCP_Link_Node_Flag_Type Flag;
+//	uint32_t ISN;
+//	Net_Protocol_TCP_Link_Condition_Type Condition;
 
-	struct Net_Protocol_TCP_Link_Node_DATA *NEXT;
+
 
 }Net_Protocol_TCP_Link_Node_DATA_Type;
 
 
-typedef struct
+typedef struct Net_Protocol_TCP_Link_Node
 {
-	Net_Protocol_TCP_Link_Node_DATA_Type *Head;
-	Net_Protocol_TCP_Link_Node_DATA_Type *End;
-}Net_Protocol_TCP_Link_Node_List_Type;
+
+	struct
+	{
+		Net_Protocol_IP_Type Type;
+
+		uint32_t Dest[16];
+	}IP;
+
+	struct
+	{
+		uint16_t Dest;
+
+		uint16_t Local;
+	}PORT;
+
+	Net_Protocol_TCP_Link_Node_DATA_Type DATA;
+
+
+	struct Net_Protocol_TCP_Link_Node *NEXT;
+
+}Net_Protocol_TCP_Link_Node_Type;
+
+
 
 typedef struct
 {
-	Net_Protocol_TCP_Link_Node_List_Type In;
-	Net_Protocol_TCP_Link_Node_List_Type Out;
+	Net_Protocol_TCP_Link_Node_Type *Head;
+	Net_Protocol_TCP_Link_Node_Type *End;
+
 }Net_Protocol_TCP_Link_DATA_Type;
 
 

@@ -56,6 +56,16 @@ typedef struct
 
 }Net_Protocol_TCP_Packet_Heade_Type;
 
+typedef union
+{
+	uint8_t DATA[40];
+	struct
+	{
+		uint8_t Kind;
+		uint8_t Length;
+		uint8_t Value[38];
+	};
+}Net_Protocol_TCP_Option_Type;
 
 #pragma pack()
 
@@ -77,6 +87,7 @@ typedef struct
 
 	uint32_t ISN;
 
+	//Net_Protocol_TCP_Option_Type Temp_Option;
 
 }Net_Protocol_TCP_DATA_Type;
 

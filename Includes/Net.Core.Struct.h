@@ -7,7 +7,7 @@
 
 #ifndef NET_CORE_STRUCT_H_
 #define NET_CORE_STRUCT_H_
-
+/*
 typedef struct
 {
 	union
@@ -43,5 +43,5 @@ typedef struct
 	};
 
 }Net_Core_Address_DATA_Type;
-
+*/
 #endif /* NET_CORE_STRUCT_H_ */

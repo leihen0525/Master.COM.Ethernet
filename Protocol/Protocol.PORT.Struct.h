@@ -11,10 +11,20 @@
 #include "Master.Stdint.h"
 #include "Protocol.PORT.Define.h"
 
+typedef union
+{
+	uint16_t DATA;
+	struct
+	{
+		uint16_t Server							:1;
+	};
+}Net_Protocol_PORT_Node_Flag_Type;
+
+
 typedef struct Net_Protocol_PORT_Node_DATA
 {
 	uint16_t PORT;
-	uint16_t Flag;
+	Net_Protocol_PORT_Node_Flag_Type Flag;
 	struct Net_Protocol_PORT_Node_DATA *NEXT;
 
 }Net_Protocol_PORT_Node_DATA_Type;
