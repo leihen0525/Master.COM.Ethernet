@@ -4,6 +4,7 @@
  *  Created on: 2019年7月15日
  *      Author: Master.HE
  */
+#include "Define.h"
 #include "Error.h"
 #include "Module/Module.h"
 #include "API.h"
@@ -44,7 +45,7 @@ int Net_Core_Init(void)
 
 	Net_Core_Device_Node_Type *Net_Node=Net_Core_DATA.Device_Node_List.Head;
 
-	int Err;
+	//int Err;
 //	Net_Socket_Init();
 //	if(Err!=Error_OK)
 //	{
@@ -55,19 +56,15 @@ int Net_Core_Init(void)
 	while(Net_Node!=Null)
 	{
 
-		if((Err=Scheduling_Create_Task(
+		Error_Args_Return(Net_Node->Task_PID_Rx,Scheduling_Create_Task(
 				(char*)Net_Node->P_OPS->Device_Name,
 				Net_Core_Task_RX,
 				Net_Node,
 				100,
 				Null,
 				200,
-				Scheduling_Task_Option_User))<Error_OK)
-		{
-			return Err;
-		}
+				Scheduling_Task_Option_User));
 
-		Net_Node->Task_PID_Rx=Err;
 
 		Net_Node=Net_Node->NEXT;
 	}
@@ -124,7 +121,7 @@ __task void Net_Core_Task_RX(void *Args)
 
 	while(1)
 	{
-		Err=Net_Node->P_OPS->Read(Net_Node->P_Rx_DATA,Net_Node->P_OPS->HEADER+Net_Node->P_OPS->MTU,500);
+		Err=Net_Node->P_OPS->Read(Net_Node->P_Rx_DATA,Net_Node->P_OPS->HEADER+Net_Node->P_OPS->MTU,1000);
 
 		if(Err==Error_OK)
 		{
