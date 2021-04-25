@@ -12,9 +12,10 @@
 
 typedef struct
 {
-
 	struct
 	{
+		Enabled_Type DHCP;
+
 		uint8_t IP_Address[4];
 		uint8_t SubNet_Mask[4];
 		uint8_t Default_Gateway[4];
@@ -22,6 +23,8 @@ typedef struct
 
 	struct
 	{
+		Enabled_Type DHCP;
+
 		uint8_t IP_Address[16];
 		uint8_t SubNet_Mask[16];
 		uint8_t Default_Gateway[16];
@@ -44,7 +47,8 @@ typedef struct
 typedef struct
 {
 	const char *Device_Name;
-	const char *Info;
+	const char *Host_Name;//合法名字只允许包含这些字符："0-9" "a-z" "A-Z" "-"
+
 
 	uint16_t HEADER;
 	uint16_t MTU;

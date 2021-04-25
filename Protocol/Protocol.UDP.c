@@ -5,6 +5,9 @@
  *      Author: Master.HE
  */
 #include <string.h>
+#include "Define.h"
+#include "List.h"
+#include "Ring.Queue.h"
 #include "Error.h"
 #include "API.h"
 
@@ -20,7 +23,7 @@
 
 #include "Protocol.PORT.h"
 
-uint8_t DATA1[4500]={0};
+#include "API/API.UDP.h"
 
 int Protocol_UDP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_UDP_DATA_Type *P_Protocol_UDP_DATA)
 {
@@ -45,6 +48,7 @@ void Protocol_UDP_Handle_Rx(
 		uint8_t *Protocol_UDP_Packet,
 		uint16_t Protocol_UDP_Packet_Size)
 {
+	int Err;
 	if(IP_Type>=Net_Protocol_IP_End
 	|| P_Net_Node==Null
 	|| P_Pseudo_Heade==Null
@@ -65,6 +69,76 @@ void Protocol_UDP_Handle_Rx(
 	}
 	Net_Protocol_UDP_Packet_Heade_Type *P_Protocol_UDP_Packet_Heade=(Net_Protocol_UDP_Packet_Heade_Type *)Protocol_UDP_Packet;
 
+	if(Protocol_UDP_Packet_Size!=UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->Total_Length))
+	{
+		return ;
+	}
+
+	uint16_t PORT=UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->DEST_PORT);
+
+	Net_API_UDP_Node_Type *P_UDP_Node=Null;
+
+	List_Find_Node_From_Symbol_2And(Net_API_UDP_DATA.Head,NEXT,Bind.SET,true,Bind.IP_Info.PORT,PORT,P_UDP_Node);
+
+	if(P_UDP_Node==Null)
+	{
+		return ;
+	}
+
+	Net_API_UDP_Buff_Type UDP_Buff;
+
+	int Len=Protocol_UDP_Packet_Size-sizeof(Net_Protocol_UDP_Packet_Heade_Type);
+
+	UDP_Buff.DATA=Memory_Malloc(Len);
+	//无法分配更多空间 只能丢弃数据包
+	if(UDP_Buff.DATA==Null)
+	{
+		return ;
+	}
+	memcpy(UDP_Buff.DATA,&Protocol_UDP_Packet[sizeof(Net_Protocol_UDP_Packet_Heade_Type)],Len);
+	UDP_Buff.Index=0;
+	UDP_Buff.Size=Len;
+	UDP_Buff.IP_Info.PORT=UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->SRC_PORT);
+
+	if(IP_Type==Net_Protocol_IP_IPv4)
+	{
+		memcpy(UDP_Buff.IP_Info.IP_Address,P_Pseudo_Heade->SRC_IPv4_Address,Net_IPv4_Adress_Size_Byte);
+		UDP_Buff.IP_Info.IP_Address_Type=Net_Core_Address_Type_IPv4;
+	}
+	else if(IP_Type==Net_Protocol_IP_IPv6)
+	{
+		//TODO IPv6 未实现
+	}
+
+
+	Error_NoArgs(Err,Mutex_Wait(P_UDP_Node->Rx_Buffer.Mutex,-1))
+	{
+		return ;
+	}
+	Net_API_UDP_Buff_Type UDP_Buff_OverFlow;
+	Ring_Queue_IN(Err,P_UDP_Node->Rx_Buffer.UDP_FIFO,Net_API_UDP_Buff_Type,UDP_Buff,UDP_Buff_OverFlow);
+
+	//发生环形队列溢出
+	if(Err==Error_OverFlow)
+	{
+		Memory_Free(UDP_Buff_OverFlow.DATA);
+	}
+
+	Error_NoArgs(Err,Semaphore_Release(P_UDP_Node->Rx_Buffer.Semaphore,1,Null))
+	{
+		;
+	}
+
+	Error_NoArgs(Err,Mutex_Release(P_UDP_Node->Rx_Buffer.Mutex))
+	{
+		return ;
+	}
+
+
+
+
+
+	/*
 	if(UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->DEST_PORT)==6000)
 	{
 
@@ -74,7 +148,7 @@ void Protocol_UDP_Handle_Rx(
 		}
 		Protocol_UDP_Tx(IP_Type,P_Net_Node,P_Pseudo_Heade->SRC_IPv4_Address,6000,6000,DATA1,4500);
 	}
-
+	*/
 
 
 }
@@ -103,7 +177,7 @@ int Protocol_UDP_Tx(
 	}
 	if((Err=IPv4_Pseudo_Heade_Init(
 			P_Pseudo_Heade,
-			P_Net_Node->IP_Config.IPv4.IP_Address,
+			P_Net_Node->IPv4_DATA.IP_Address.IP.Address,
 			DEST_IP_Address,
 			Net_IPv4_Protocol_UDP,
 			sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size))!=Error_OK)

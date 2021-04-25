@@ -5,6 +5,7 @@
  *      Author: Master.HE
  */
 #include <string.h>
+#include "List.h"
 #include "Error.h"
 #include "API.h"
 #include "Core/Core.Define.h"
@@ -48,17 +49,12 @@ int IPv4_ARP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_IPv4_ARP_DATA_Type *
 	int Size=sizeof(Static_Net_IPv4_ARP_Cache_Node)/sizeof(Net_IPv4_ARP_Cache_Node_Type);
 	for(int i=0;i<Size;i++)
 	{
-
-		if(P_Net_Node->ARP_DATA.ARP_Cache_List.End==Null)
-		{
-			P_Net_Node->ARP_DATA.ARP_Cache_List.Head=&Static_Net_IPv4_ARP_Cache_Node[i];
-		}
-		else
-		{
-			P_Net_Node->ARP_DATA.ARP_Cache_List.End->NEXT=&Static_Net_IPv4_ARP_Cache_Node[i];
-		}
-		P_Net_Node->ARP_DATA.ARP_Cache_List.End=&Static_Net_IPv4_ARP_Cache_Node[i];
-		Static_Net_IPv4_ARP_Cache_Node[i].NEXT=Null;
+		Net_IPv4_ARP_Cache_Node_Type *P_Node=&Static_Net_IPv4_ARP_Cache_Node[i];
+		List_Add_Node_To_End(
+				P_Net_Node->ARP_DATA.ARP_Cache_List.Head,
+				P_Net_Node->ARP_DATA.ARP_Cache_List.End,
+				NEXT,
+				P_Node);
 
 	}
 
@@ -111,16 +107,14 @@ int IPv4_ARP_Cache_Add(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *IPv4_Addre
 	memcpy(P_Cache_Node->MAC_Address,MAC_Address,6);
 	P_Cache_Node->TimeOut=Net_IPv4_ARP_Cache_Max_Validity_Time_1S;
 
-	if(P_Net_Node->ARP_DATA.ARP_Cache_List.End==Null)
-	{
-		P_Net_Node->ARP_DATA.ARP_Cache_List.Head=P_Cache_Node;
-	}
-	else
-	{
-		P_Net_Node->ARP_DATA.ARP_Cache_List.End->NEXT=P_Cache_Node;
-	}
-	P_Net_Node->ARP_DATA.ARP_Cache_List.End=P_Cache_Node;
-	P_Cache_Node->NEXT=Null;
+
+	List_Add_Node_To_End(
+			P_Net_Node->ARP_DATA.ARP_Cache_List.Head,
+			P_Net_Node->ARP_DATA.ARP_Cache_List.End,
+			NEXT,
+			P_Cache_Node);
+
+
 	Err=Error_OK;
 
 IPv4_ARP_Cache_Add_Exit:
@@ -240,7 +234,7 @@ void IPv4_ARP_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *ARP_Packe
 		return ;
 	}
 
-	if(memcmp(P_Net_Node->IP_Config.IPv4.IP_Address,P_ARP_Packet->Target_IP_Address,4)!=0)
+	if(memcmp(P_Net_Node->IPv4_DATA.IP_Address.IP.Address,P_ARP_Packet->Target_IP_Address,4)!=0)
 	{
 		return ;
 	}
@@ -306,7 +300,7 @@ int IPv4_ARP_Tx(
 	P_ARP_Packet->Opcode=UINT16_REVERSE(Opcode);
 
 	memcpy(P_ARP_Packet->Sender_MAC_Address,P_Net_Node->P_OPS->MAC_Address,6);
-	memcpy(P_ARP_Packet->Sender_IP_Address,P_Net_Node->IP_Config.IPv4.IP_Address,4);
+	memcpy(P_ARP_Packet->Sender_IP_Address,P_Net_Node->IPv4_DATA.IP_Address.IP.Address,4);
 
 	memcpy(P_ARP_Packet->Target_MAC_Address,Target_MAC_Address,6);
 	memcpy(P_ARP_Packet->Target_IP_Address,Target_IPv4_Address,4);

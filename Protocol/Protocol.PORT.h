@@ -8,6 +8,7 @@
 #ifndef PROTOCOL_PORT_H_
 #define PROTOCOL_PORT_H_
 
+#include "Protocol.PORT.Define.h"
 #include "Protocol.PORT.Struct.h"
 
 int Protocol_PORT_Init(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA);

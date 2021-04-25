@@ -29,7 +29,7 @@ int Protocol_TCP_Link_Add(
 		uint16_t Local_PORT,
 		Net_Protocol_TCP_Link_Node_DATA_Type **P_DATA)
 {
-
+	return Error_OK;
 }
 
 int Protocol_TCP_Link_Find(
@@ -40,7 +40,7 @@ int Protocol_TCP_Link_Find(
 		uint16_t Local_PORT,
 		Net_Protocol_TCP_Link_Node_DATA_Type **P_DATA)
 {
-
+	return Error_OK;
 }
 int Protocol_TCP_Link_Del(Net_Protocol_TCP_Link_DATA_Type *P_Protocol_TCP_Link_DATA,
 		Net_Protocol_IP_Type IP_Type,
@@ -50,5 +50,5 @@ int Protocol_TCP_Link_Del(Net_Protocol_TCP_Link_DATA_Type *P_Protocol_TCP_Link_D
 		bool Internal_Del_DATA,
 		Net_Protocol_TCP_Link_Node_DATA_Type **P_DATA)
 {
-
+	return Error_OK;
 }

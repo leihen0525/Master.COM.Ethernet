@@ -25,6 +25,7 @@
 
 #include "Core.h"
 
+#include "API/API.UDP.h"
 
 Net_Core_DATA_Type Net_Core_DATA;
 
@@ -45,13 +46,14 @@ int Net_Core_Init(void)
 
 	Net_Core_Device_Node_Type *Net_Node=Net_Core_DATA.Device_Node_List.Head;
 
-	//int Err;
+	int Err;
 //	Net_Socket_Init();
 //	if(Err!=Error_OK)
 //	{
 //		return Err;
 //	}
 
+	Error_NoArgs_Return(Err,Net_UDP_Init());
 
 	while(Net_Node!=Null)
 	{

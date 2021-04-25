@@ -34,4 +34,6 @@ int Net_Core_Tx_DATA_IPv4(
 
 uint16_t Net_Core_CheckSum(uint16_t * buffer1, uint32_t size1,uint16_t * buffer2, uint32_t size2);
 
+extern Net_Core_DATA_Type Net_Core_DATA;
+
 #endif /* CORE_H_ */

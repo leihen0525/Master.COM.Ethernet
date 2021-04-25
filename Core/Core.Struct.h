@@ -29,9 +29,6 @@ typedef struct Net_Core_Device_Node
 	bool Open;
 	uint8_t *P_Rx_DATA;
 
-	bool DHCP;
-
-	Net_Device_IP_Config_Type IP_Config;
 
 	Net_IPv4_ARP_DATA_Type ARP_DATA;
 	Net_IPv4_DATA_Type IPv4_DATA;

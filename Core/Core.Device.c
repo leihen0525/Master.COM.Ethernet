@@ -5,6 +5,7 @@
  *      Author: Master.HE
  */
 #include <string.h>
+#include "List.h"
 #include "Master.Stdint.h"
 #include "API.h"
 #include "Core.Struct.h"
@@ -14,6 +15,7 @@
 
 #include "IPv4/IPv4.ARP.h"
 #include "IPv4/IPv4.h"
+#include "IPv4/IPv4.Define.h"
 #include "Protocol/Protocol.TCP.h"
 #include "Protocol/Protocol.UDP.h"
 //#include "Session/Session.h"
@@ -23,14 +25,13 @@
 extern Net_Core_DATA_Type Net_Core_DATA;
 
 int Net_Core_Device_Register(
-		Net_Device_Type Type,
-		bool DHCP,
+		Net_Device_Type Device_Type,
 		const Net_Device_Ethernet_Config_Type *P_Ethernet_Config,
 		const Net_Device_IP_Config_Type *P_IP_Config,
 		const Net_Device_OPS_Type *P_OPS)
 {
 
-	if(P_OPS==Null || Type>=Net_Device_Type_End || P_Ethernet_Config==Null || (DHCP!=false && P_IP_Config==Null))
+	if(P_OPS==Null || Device_Type>=Net_Device_Type_End || P_Ethernet_Config==Null || P_IP_Config==Null)
 	{
 		return Error_Invalid_Parameter;
 	}
@@ -41,9 +42,12 @@ int Net_Core_Device_Register(
 	|| P_OPS->SET_MAC_Address==Null
 	|| P_OPS->GET_Linked_Status==Null
 	|| P_OPS->Read==Null
-	|| P_OPS->Write==Null)
+	|| P_OPS->Write==Null
+
+	|| P_IP_Config->IPv4.DHCP>=Enabled_End
+	|| P_IP_Config->IPv6.DHCP>=Enabled_End)
 	{
-		return Error_Invalid_Parameter;
+		return Error_Config;
 	}
 
 
@@ -53,13 +57,29 @@ int Net_Core_Device_Register(
 		return Error_Allocation_Memory_Failed;
 	}
 
-	Temp_Node->Device_Type=Type;
-	Temp_Node->DHCP=DHCP;
+	Temp_Node->Device_Type=Device_Type;
 
-	if(DHCP==false)
+	//IPv4
+	Temp_Node->IPv4_DATA.IP_Address.DHCP.Enabled=P_IP_Config->IPv4.DHCP;
+	Temp_Node->IPv4_DATA.IP_Address.DHCP.Achieve=false;
+	if(P_IP_Config->IPv4.DHCP==Enable)
 	{
-		memcpy(&Temp_Node->IP_Config,P_IP_Config,sizeof(Net_Device_IP_Config_Type));
+		Temp_Node->IPv4_DATA.IP_Address.IP.Confirm=false;
+		Temp_Node->IPv4_DATA.IP_Address.Default_Gateway.Confirm=false;
 	}
+	else
+	{
+		Temp_Node->IPv4_DATA.IP_Address.IP.Confirm=true;
+		Temp_Node->IPv4_DATA.IP_Address.Default_Gateway.Confirm=true;
+
+		memcpy(&Temp_Node->IPv4_DATA.IP_Address.IP.Address,P_IP_Config->IPv4.IP_Address,Net_IPv4_Adress_Size_Byte);
+		memcpy(&Temp_Node->IPv4_DATA.IP_Address.IP.SubNet_Mask,P_IP_Config->IPv4.SubNet_Mask,Net_IPv4_Adress_Size_Byte);
+		memcpy(&Temp_Node->IPv4_DATA.IP_Address.Default_Gateway.Address,P_IP_Config->IPv4.Default_Gateway,Net_IPv4_Adress_Size_Byte);
+	}
+
+	//TODO IPv6
+
+
 	Temp_Node->P_Ethernet_Config=P_Ethernet_Config;
 	Temp_Node->P_OPS=P_OPS;
 
@@ -97,16 +117,11 @@ int Net_Core_Device_Register(
 //	}
 
 	//
-	if(Net_Core_DATA.Device_Node_List.End==Null)
-	{
-		Net_Core_DATA.Device_Node_List.Head=Temp_Node;
-	}
-	else
-	{
-		Net_Core_DATA.Device_Node_List.End->NEXT=Temp_Node;
-	}
-	Net_Core_DATA.Device_Node_List.End=Temp_Node;
-	Temp_Node->NEXT=Null;
+	List_Add_Node_To_End(
+			Net_Core_DATA.Device_Node_List.Head,
+			Net_Core_DATA.Device_Node_List.End,
+			NEXT,
+			Temp_Node);
 
 	return Error_OK;
 }

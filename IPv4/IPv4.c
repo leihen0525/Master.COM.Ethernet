@@ -11,7 +11,7 @@
 #include "Core/Core.Define.h"
 #include "Core/Core.h"
 #include "IPv4.Define.h"
-
+#include "Net.IPv4.Define.h"
 
 #include "IPv4.ICMP.h"
 
@@ -289,19 +289,19 @@ void IPv4_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *IPv4_Packet)
 		return ;
 	}
 
-	if(memcmp(P_IPv4_Packet_Heade->DEST_IPv4_Address,Net_IPv4_Adress_0x00,4)==0)
+	if(memcmp(P_IPv4_Packet_Heade->DEST_IPv4_Address,Net_IPv4_Adress_LocalHost,Net_IPv4_Adress_Size_Byte)==0)
 	{
 		return ;
 	}
-	else if(memcmp(P_IPv4_Packet_Heade->DEST_IPv4_Address,Net_IPv4_Adress_0x7F,4)==0)
+	else if(memcmp(P_IPv4_Packet_Heade->DEST_IPv4_Address,Net_IPv4_Adress_LoopBack,Net_IPv4_Adress_Size_Byte)==0)
 	{
 		return ;
 	}
-	else if(memcmp(P_IPv4_Packet_Heade->DEST_IPv4_Address,Net_IPv4_Adress_0xFF,4)==0)
+	else if(memcmp(P_IPv4_Packet_Heade->DEST_IPv4_Address,Net_IPv4_Adress_Broadcast,Net_IPv4_Adress_Size_Byte)==0)
 	{
 		//return ;
 	}
-	else if(memcmp(P_IPv4_Packet_Heade->DEST_IPv4_Address,P_Net_Node->IP_Config.IPv4.IP_Address,4)==0)
+	else if(memcmp(P_IPv4_Packet_Heade->DEST_IPv4_Address,P_Net_Node->IPv4_DATA.IP_Address.IP.Address,Net_IPv4_Adress_Size_Byte)==0)
 	{
 		;
 	}
@@ -457,7 +457,7 @@ int IPv4_Tx_Check_Pend_List(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *IPv4_
 	{
 		P_Tx_Node_NEXT=P_Tx_Node->NEXT;
 
-		if(memcmp(P_Tx_Node->Target_IPv4_Address,IPv4_Address,4)==0)
+		if(memcmp(P_Tx_Node->Target_IPv4_Address,IPv4_Address,Net_IPv4_Adress_Size_Byte)==0)
 		{
 			if(P_Tx_Node_LAST==Null)
 			{
@@ -520,29 +520,29 @@ int IPv4_Tx_Check_IPv4_Segment(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *IP
 	{
 		return Error_Invalid_Parameter;
 	}
-	if(memcmp(Net_IPv4_Adress_0x00,IPv4_Address,4)==0)
+	if(memcmp(Net_IPv4_Adress_LocalHost,IPv4_Address,Net_IPv4_Adress_Size_Byte)==0)
 	{
-		return Net_IPv4_Address_Type_Invalid;
+		return Net_IPv4_Address_Attribute_Invalid;
 	}
-	else if(memcmp(Net_IPv4_Adress_0x7F,IPv4_Address,4)==0)
+	else if(memcmp(Net_IPv4_Adress_LoopBack,IPv4_Address,Net_IPv4_Adress_Size_Byte)==0)
 	{
-		return Net_IPv4_Address_Type_SelfAddress;
+		return Net_IPv4_Address_Attribute_SelfAddress;
 	}
-	else if(memcmp(Net_IPv4_Adress_0xFF,IPv4_Address,4)==0)
+	else if(memcmp(Net_IPv4_Adress_Broadcast,IPv4_Address,Net_IPv4_Adress_Size_Byte)==0)
 	{
-		return Net_IPv4_Address_Type_BroadcastAddress;
+		return Net_IPv4_Address_Attribute_BroadcastAddress;
 	}
 
-	for(int i=0;i<4;i++)
+	for(int i=0;i<Net_IPv4_Adress_Size_Byte;i++)
 	{
 
-		if((P_Net_Node->IP_Config.IPv4.IP_Address[i]&P_Net_Node->IP_Config.IPv4.SubNet_Mask[i])!=(IPv4_Address[i]&P_Net_Node->IP_Config.IPv4.SubNet_Mask[i]))
+		if((P_Net_Node->IPv4_DATA.IP_Address.IP.Address[i]&P_Net_Node->IPv4_DATA.IP_Address.IP.SubNet_Mask[i])!=(IPv4_Address[i]&P_Net_Node->IPv4_DATA.IP_Address.IP.SubNet_Mask[i]))
 		{
-			return Net_IPv4_Address_Type_ExtraNet;
+			return Net_IPv4_Address_Attribute_ExtraNet;
 		}
 
 	}
-	return Net_IPv4_Address_Type_SubNet;
+	return Net_IPv4_Address_Attribute_SubNet;
 
 }
 
@@ -581,20 +581,20 @@ int IPv4_Tx_Pend_DATA(
 		goto IPv4_Tx_Pend_Exit2;
 	}
 
-	if(Err==Net_IPv4_Address_Type_Invalid)
+	if(Err==Net_IPv4_Address_Attribute_Invalid)
 	{
 		Err=Error_Invalid_Parameter;
 		goto IPv4_Tx_Pend_Exit2;
 	}
-	else if(Err==Net_IPv4_Address_Type_SubNet || Err==Net_IPv4_Address_Type_BroadcastAddress)
+	else if(Err==Net_IPv4_Address_Attribute_SubNet || Err==Net_IPv4_Address_Attribute_BroadcastAddress)
 	{
-		memcpy(P_Tx_Node->Target_IPv4_Address,DEST_IPv4_Address,4);
+		memcpy(P_Tx_Node->Target_IPv4_Address,DEST_IPv4_Address,Net_IPv4_Adress_Size_Byte);
 	}
-	else if(Err==Net_IPv4_Address_Type_ExtraNet)
+	else if(Err==Net_IPv4_Address_Attribute_ExtraNet)
 	{
-		memcpy(P_Tx_Node->Target_IPv4_Address,P_Net_Node->IP_Config.IPv4.Default_Gateway,4);
+		memcpy(P_Tx_Node->Target_IPv4_Address,P_Net_Node->IPv4_DATA.IP_Address.Default_Gateway.Address,Net_IPv4_Adress_Size_Byte);
 	}
-	else if(Err==Net_IPv4_Address_Type_SelfAddress)
+	else if(Err==Net_IPv4_Address_Attribute_SelfAddress)
 	{
 		//TODO 这个地方有点特殊 回环地址 需要后期实现
 		Err=Error_Invalid_Parameter;
@@ -608,16 +608,16 @@ int IPv4_Tx_Pend_DATA(
 
 //	if(Err==false)
 //	{
-//		memcpy(P_Tx_Node->Target_IPv4_Address,P_Net_Node->IP_Config.IPv4.Default_Gateway,4);
+//		memcpy(P_Tx_Node->Target_IPv4_Address,P_Net_Node->IP_Config.IPv4.Default_Gateway,Net_IPv4_Adress_Size_Byte);
 //	}
 //	else
 //	{
-//		memcpy(P_Tx_Node->Target_IPv4_Address,DEST_IPv4_Address,4);
+//		memcpy(P_Tx_Node->Target_IPv4_Address,DEST_IPv4_Address,Net_IPv4_Adress_Size_Byte);
 //	}
 
 
 	P_Tx_Node->Protocol=Protocol;
-	memcpy(P_Tx_Node->DEST_IPv4_Address,DEST_IPv4_Address,4);
+	memcpy(P_Tx_Node->DEST_IPv4_Address,DEST_IPv4_Address,Net_IPv4_Adress_Size_Byte);
 	P_Tx_Node->DATA=DATA;
 	P_Tx_Node->Size=Size;
 	P_Tx_Node->DATA_Free=DATA_Free;
@@ -739,7 +739,7 @@ int IPv4_Tx_Send_DATA(
 	P_IPv4_Packet_Heade->Protocol=Protocol;
 	P_IPv4_Packet_Heade->Header_CheckSum=UINT16_REVERSE(0x0000);
 	P_IPv4_Packet_Heade->TTL=Net_IPv4_Packet_Heade_TTL_Default;
-	memcpy(P_IPv4_Packet_Heade->SRC_IPv4_Address,P_Net_Node->IP_Config.IPv4.IP_Address,4);
+	memcpy(P_IPv4_Packet_Heade->SRC_IPv4_Address,P_Net_Node->IPv4_DATA.IP_Address.IP.Address,4);
 	memcpy(P_IPv4_Packet_Heade->DEST_IPv4_Address,DEST_IPv4_Address,4);
 
 	P_Net_Node->IPv4_DATA.ID++;

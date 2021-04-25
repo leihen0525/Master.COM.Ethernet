@@ -161,7 +161,7 @@ int Protocol_TCP_Tx(
 	}
 	if((Err=IPv4_Pseudo_Heade_Init(
 			P_Pseudo_Heade,
-			P_Net_Node->IP_Config.IPv4.IP_Address,
+			P_Net_Node->IPv4_DATA.IP_Address.IP.Address,
 			DEST_IP_Address,
 			Net_IPv4_Protocol_TCP,
 			sizeof(Net_Protocol_TCP_Packet_Heade_Type)+Option_Size+DATA_Size))!=Error_OK)

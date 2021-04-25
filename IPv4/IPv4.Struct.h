@@ -10,6 +10,7 @@
 
 #include "Master.Stdint.h"
 #include "IPv4.Define.h"
+#include "Net.IPv4.Define.h"
 
 #pragma pack(1)
 
@@ -74,6 +75,32 @@ typedef struct
 
 #pragma pack()
 
+
+
+typedef struct
+{
+	struct
+	{
+		Enabled_Type Enabled;
+		bool Achieve;
+	}DHCP;
+
+	struct
+	{
+		bool Confirm;
+		uint8_t Address[Net_IPv4_Adress_Size_Byte];
+		uint8_t SubNet_Mask[Net_IPv4_Adress_Size_Byte];
+	}IP;
+
+	struct
+	{
+		bool Confirm;
+		uint8_t Address[Net_IPv4_Adress_Size_Byte];
+	}Default_Gateway;
+
+}Net_IPv4_Address_Type;
+
+
 typedef struct Net_IPv4_Rx_NODE_DATA
 {
 	uint16_t Address;
@@ -87,8 +114,8 @@ typedef struct Net_IPv4_Rx_NODE_DATA
 
 typedef struct Net_IPv4_Rx_NODE
 {
-	uint8_t SRC_IPv4_Address[4];
-	uint8_t DEST_IPv4_Address[4];
+	uint8_t SRC_IPv4_Address[Net_IPv4_Adress_Size_Byte];
+	uint8_t DEST_IPv4_Address[Net_IPv4_Adress_Size_Byte];
 
 	uint8_t Protocol;
 
@@ -116,13 +143,13 @@ typedef struct
 typedef struct Net_IPv4_Tx_NODE
 {
 
-	uint8_t Target_IPv4_Address[4];
+	uint8_t Target_IPv4_Address[Net_IPv4_Adress_Size_Byte];
 
 	uint8_t Target_MAC_Address[6];
 
 	uint8_t Protocol;
 
-	uint8_t DEST_IPv4_Address[4];
+	uint8_t DEST_IPv4_Address[Net_IPv4_Adress_Size_Byte];
 
 	uint8_t *DATA;
 
@@ -166,6 +193,11 @@ typedef struct
 
 		Net_IPv4_Rx_List_Type List;
 	}Rx_List;
+
+
+
+
+	Net_IPv4_Address_Type IP_Address;
 
 }Net_IPv4_DATA_Type;
 

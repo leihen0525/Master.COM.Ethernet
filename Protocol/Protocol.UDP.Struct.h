@@ -28,11 +28,13 @@ typedef struct
 
 #pragma pack()
 
+/*
 typedef struct
 {
 	int a;
 
 }Net_Protocol_UDP_Node_DATA_Type;
+*/
 
 typedef struct
 {

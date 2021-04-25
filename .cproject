@@ -128,13 +128,13 @@
 							<builder buildPath="${workspace_loc:/Master.COM.Ethernet}/Debug" id="iar.arm.toolchain.builder.v8.0.0.993660238" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="iar.arm.toolchain.builder.v8.0.0"/>
 							<tool id="iar.arm.toolchain.compiler.v8.0.0.688389911" name="IAR C/C++ Compiler for ARM" superClass="iar.arm.toolchain.compiler.v8.0.0">
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.debugInfo.v8.0.0.1920706948" name="Generate debug information" superClass="iar.arm.toolchain.compiler.option.debugInfo.v8.0.0" valueType="boolean"/>
-								<option defaultValue="iar.arm.toolchain.compiler.option.optLevel.none.v8.0.0" id="iar.arm.toolchain.compiler.option.optLevel.v8.0.0.220915493" name="Optimization level:" superClass="iar.arm.toolchain.compiler.option.optLevel.v8.0.0" useByScannerDiscovery="false" value="iar.arm.toolchain.compiler.option.optLevel.medium.v8.0.0" valueType="enumerated"/>
-								<option id="iar.arm.toolchain.compiler.option.optCSE.v8.0.0.1188792168" name="Disable common subexpression elimination" superClass="iar.arm.toolchain.compiler.option.optCSE.v8.0.0" useByScannerDiscovery="false"/>
+								<option defaultValue="iar.arm.toolchain.compiler.option.optLevel.none.v8.0.0" id="iar.arm.toolchain.compiler.option.optLevel.v8.0.0.220915493" name="Optimization level:" superClass="iar.arm.toolchain.compiler.option.optLevel.v8.0.0" useByScannerDiscovery="false" value="iar.arm.toolchain.compiler.option.optLevel.low.v8.0.0" valueType="enumerated"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optCSE.v8.0.0.1188792168" name="Disable common subexpression elimination" superClass="iar.arm.toolchain.compiler.option.optCSE.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optUnroll.v8.0.0.176269967" name="Disable loop unrolling" superClass="iar.arm.toolchain.compiler.option.optUnroll.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optInline.v8.0.0.1147165508" name="Disable function inlining" superClass="iar.arm.toolchain.compiler.option.optInline.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
-								<option id="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0.1830356959" name="Disable code motion" superClass="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0" useByScannerDiscovery="false"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0.1830356959" name="Disable code motion" superClass="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optAliasAnalysis.v8.0.0.166212143" name="Disable type-based alias analysis" superClass="iar.arm.toolchain.compiler.option.optAliasAnalysis.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
-								<option id="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0.1378870354" name="Disable static clustering" superClass="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0" useByScannerDiscovery="false"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0.1378870354" name="Disable static clustering" superClass="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optScheduling.v8.0.0.1495555157" name="Disable instruction scheduling" superClass="iar.arm.toolchain.compiler.option.optScheduling.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
 								<option id="iar.arm.toolchain.compiler.option.cpuMode.v8.0.0.619006557" name="Processor mode:" superClass="iar.arm.toolchain.compiler.option.cpuMode.v8.0.0" useByScannerDiscovery="false" value="iar.arm.toolchain.compiler.option.cpuMode.thumb.v8.0.0" valueType="enumerated"/>
 								<option id="iar.arm.toolchain.compiler.option.extraOptionsI79.v8.5.0.1903078727" name="Compiler extra options from device i79 file" superClass="iar.arm.toolchain.compiler.option.extraOptionsI79.v8.5.0"/>
@@ -209,13 +209,13 @@
 							<builder buildPath="${workspace_loc:/Master.COM.Ethernet}/Debug" id="iar.arm.toolchain.builder.v8.0.0.1022741569" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="iar.arm.toolchain.builder.v8.0.0"/>
 							<tool id="iar.arm.toolchain.compiler.v8.0.0.112871412" name="IAR C/C++ Compiler for ARM" superClass="iar.arm.toolchain.compiler.v8.0.0">
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.debugInfo.v8.0.0.2035565956" name="Generate debug information" superClass="iar.arm.toolchain.compiler.option.debugInfo.v8.0.0" valueType="boolean"/>
-								<option defaultValue="iar.arm.toolchain.compiler.option.optLevel.none.v8.0.0" id="iar.arm.toolchain.compiler.option.optLevel.v8.0.0.1465697837" name="Optimization level:" superClass="iar.arm.toolchain.compiler.option.optLevel.v8.0.0" valueType="enumerated"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optCSE.v8.0.0.64192386" name="Disable common subexpression elimination" superClass="iar.arm.toolchain.compiler.option.optCSE.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
+								<option defaultValue="iar.arm.toolchain.compiler.option.optLevel.none.v8.0.0" id="iar.arm.toolchain.compiler.option.optLevel.v8.0.0.1465697837" name="Optimization level:" superClass="iar.arm.toolchain.compiler.option.optLevel.v8.0.0" useByScannerDiscovery="false" value="iar.arm.toolchain.compiler.option.optLevel.medium.v8.0.0" valueType="enumerated"/>
+								<option id="iar.arm.toolchain.compiler.option.optCSE.v8.0.0.64192386" name="Disable common subexpression elimination" superClass="iar.arm.toolchain.compiler.option.optCSE.v8.0.0" useByScannerDiscovery="false"/>
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optUnroll.v8.0.0.2024784834" name="Disable loop unrolling" superClass="iar.arm.toolchain.compiler.option.optUnroll.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optInline.v8.0.0.253000322" name="Disable function inlining" superClass="iar.arm.toolchain.compiler.option.optInline.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0.1837530221" name="Disable code motion" superClass="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
+								<option id="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0.1837530221" name="Disable code motion" superClass="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0" useByScannerDiscovery="false"/>
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optAliasAnalysis.v8.0.0.687865761" name="Disable type-based alias analysis" superClass="iar.arm.toolchain.compiler.option.optAliasAnalysis.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0.190082430" name="Disable static clustering" superClass="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
+								<option id="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0.190082430" name="Disable static clustering" superClass="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0" useByScannerDiscovery="false"/>
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optScheduling.v8.0.0.1986128923" name="Disable instruction scheduling" superClass="iar.arm.toolchain.compiler.option.optScheduling.v8.0.0" useByScannerDiscovery="false" valueType="boolean"/>
 								<option id="iar.arm.toolchain.compiler.option.cpuMode.v8.0.0.1538709679" name="Processor mode:" superClass="iar.arm.toolchain.compiler.option.cpuMode.v8.0.0" useByScannerDiscovery="false" value="iar.arm.toolchain.compiler.option.cpuMode.thumb.v8.0.0" valueType="enumerated"/>
 								<option id="iar.arm.toolchain.compiler.option.extraOptionsI79.v8.5.0.1525217299" name="Compiler extra options from device i79 file" superClass="iar.arm.toolchain.compiler.option.extraOptionsI79.v8.5.0"/>
@@ -263,6 +263,16 @@
 		</project-mappings>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release.COM.Ethernet.ARM.M7">
+			<resource resourceType="PROJECT" workspacePath="/Master.COM.Ethernet"/>
+		</configuration>
+		<configuration configurationName="Release.COM.Ethernet.ARM.M4">
+			<resource resourceType="PROJECT" workspacePath="/Master.COM.Ethernet"/>
+		</configuration>
+		<configuration configurationName="Release.COM.Ethernet.ARM.M0Plus">
+			<resource resourceType="PROJECT" workspacePath="/Master.COM.Ethernet"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

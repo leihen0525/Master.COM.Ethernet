@@ -18,13 +18,13 @@ typedef enum
 
 typedef enum
 {
-	Net_IPv4_Address_Type_Invalid			=0,	//无效地址
-	Net_IPv4_Address_Type_SubNet,				//同一个子网地址
-	Net_IPv4_Address_Type_ExtraNet,				//外网地址
-	Net_IPv4_Address_Type_SelfAddress,			//自身地址
-	Net_IPv4_Address_Type_BroadcastAddress,		//广播地址
+	Net_IPv4_Address_Attribute_Invalid			=0,	//无效地址
+	Net_IPv4_Address_Attribute_SubNet,				//同一个子网地址
+	Net_IPv4_Address_Attribute_ExtraNet,			//外网地址
+	Net_IPv4_Address_Attribute_SelfAddress,			//自身地址
+	Net_IPv4_Address_Attribute_BroadcastAddress,	//广播地址
 
-}Net_IPv4_Address_Type;
+}Net_IPv4_Address_Attribute_Type;
 
 typedef enum
 {

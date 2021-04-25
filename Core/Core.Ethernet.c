@@ -9,7 +9,7 @@
 #include "API.h"
 #include "Core.Define.h"
 
-
+#include "Core.Ethernet.Define.h"
 #include "Core.Ethernet.Struct.h"
 #include "Core.Ethernet.h"
 
@@ -75,9 +75,9 @@ int Net_Core_Ethernet_Tx_DATA(
 	}
 	Net_Core_Ethernet_Packet_Heade_Type *P_Ethernet_Heade=(Net_Core_Ethernet_Packet_Heade_Type *)Ether_TX_DATA[0].DATA;
 
-	memcpy(P_Ethernet_Heade->DEST_MAC_Address,Target_MAC_Address,6);
+	memcpy(P_Ethernet_Heade->DEST_MAC_Address,Target_MAC_Address,Net_Core_Ethernet_MAC_Address_Size_Byte);
 
-	memcpy(P_Ethernet_Heade->SRC_MAC_Address,P_Net_Node->P_OPS->MAC_Address,6);
+	memcpy(P_Ethernet_Heade->SRC_MAC_Address,P_Net_Node->P_OPS->MAC_Address,Net_Core_Ethernet_MAC_Address_Size_Byte);
 
 	P_Ethernet_Heade->Length_Type=UINT16_REVERSE(Protocol);
 
@@ -122,9 +122,9 @@ int Net_Core_Ethernet_Tx_DATAs(
 	}
 	Net_Core_Ethernet_Packet_Heade_Type *P_Ethernet_Heade=(Net_Core_Ethernet_Packet_Heade_Type *)Ether_TX_DATA[0].DATA;
 
-	memcpy(P_Ethernet_Heade->DEST_MAC_Address,Target_MAC_Address,6);
+	memcpy(P_Ethernet_Heade->DEST_MAC_Address,Target_MAC_Address,Net_Core_Ethernet_MAC_Address_Size_Byte);
 
-	memcpy(P_Ethernet_Heade->SRC_MAC_Address,P_Net_Node->P_OPS->MAC_Address,6);
+	memcpy(P_Ethernet_Heade->SRC_MAC_Address,P_Net_Node->P_OPS->MAC_Address,Net_Core_Ethernet_MAC_Address_Size_Byte);
 
 	P_Ethernet_Heade->Length_Type=UINT16_REVERSE(Protocol);
 

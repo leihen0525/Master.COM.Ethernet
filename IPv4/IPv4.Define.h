@@ -22,8 +22,5 @@
 #define Net_IPv4_DATA_Rx_List_Max_Count					(20)
 
 
-#define Net_IPv4_Adress_0x00							"\x00\x00\x00\x00"
-#define Net_IPv4_Adress_0x7F							"\x7F\x00\x00\x01"
-#define Net_IPv4_Adress_0xFF							"\xFF\xFF\xFF\xFF"
 
 #endif /* IPV4_DEFINE_H_ */
