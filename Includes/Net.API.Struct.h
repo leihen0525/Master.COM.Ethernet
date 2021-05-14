@@ -9,12 +9,12 @@
 #define NET_API_STRUCT_H_
 
 #include "Master.Stdint.h"
-#include "Net.Core.Enum.h"
+#include "Net.IP.Enum.h"
 
 
 typedef struct
 {
-	Net_Core_Address_Type IP_Address_Type;
+	Net_IP_Address_Type IP_Type;
 
 	uint8_t IP_Address[16];
 

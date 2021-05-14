@@ -20,6 +20,8 @@
 #include "Protocol/Protocol.UDP.h"
 #include "Protocol/Protocol.TCP.h"
 
+#include "Net.IP.Enum.h"
+
 //TODO 有一个功能没有实现 就是当分片的数据包被丢弃的时候 理论上会发送一帧ICMP数据包给发送着 告知数据包被丢弃了
 
 int IPv4_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_IPv4_DATA_Type *P_IPv4_DATA)
@@ -370,7 +372,7 @@ void IPv4_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *IPv4_Packet)
 					Out_Size)==Error_OK)
 			{
 				Protocol_TCP_Handle_Rx(
-						Net_Protocol_IP_IPv4,
+						Net_IP_Address_IPv4,
 						P_Net_Node,
 						&Net_IPv4_TCP_Pseudo_Heade,
 						Out_DATA,
@@ -389,7 +391,7 @@ void IPv4_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *IPv4_Packet)
 					Out_Size)==Error_OK)
 			{
 				Protocol_UDP_Handle_Rx(
-						Net_Protocol_IP_IPv4,
+						Net_IP_Address_IPv4,
 						P_Net_Node,
 						&Net_IPv4_UDP_Pseudo_Heade,
 						Out_DATA,

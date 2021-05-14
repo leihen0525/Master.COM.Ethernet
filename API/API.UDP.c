@@ -8,6 +8,7 @@
 #include "List.h"
 #include "Define.h"
 #include "Error.h"
+#include "Net.Error.h"
 #include "API.h"
 
 #include "Core/Core.h"
@@ -18,6 +19,7 @@
 
 #include "Protocol/Protocol.PORT.h"
 #include "Protocol/Protocol.UDP.h"
+
 
 Net_API_UDP_DATA_Type Net_API_UDP_DATA;
 
@@ -32,10 +34,10 @@ int Net_UDP_Init(void)
 //创建一个连接
 int Net_UDP_Create(
 		const char *Device_Name,
-		uint32_t Ring_Queue_Length)
+		uint32_t Rx_Buffer_Max_Length)
 {
 	int Err;
-	if(Device_Name==Null || Ring_Queue_Length==0)
+	if(Device_Name==Null || Rx_Buffer_Max_Length==0)
 	{
 		//TODO 这个参数为NULL还未实现
 		return Error_Invalid_Parameter;
@@ -60,35 +62,37 @@ int Net_UDP_Create(
 	}
 	int Handle;
 
-	Error_Args_Return(Handle,Apply_Handle());
+	Error_Args_Return(Handle,Handle_New());
 
 
 	Net_API_UDP_Node_Type *P_UDP_Node=Memory_Malloc(sizeof(Net_API_UDP_Node_Type));
 	if(P_UDP_Node==Null)
 	{
-		return Error_Allocation_Memory_Failed;
+		Err=Error_Allocation_Memory_Failed;
+		goto Net_UDP_Create_Exit;
 	}
 
 	//申请一个互斥信号
-	Error_Args(Err,Mutex_Create(Null,Event_Queue_Option_FIFO))
+	Error_Args(Err,Mutex_Create(Null,Event_Queue_Option_Priority))
 	{
 		goto Net_UDP_Create_Exit1;
 	}
 	P_UDP_Node->Rx_Buffer.Mutex=Err;
 
 	//申请一个数据接收缓冲区有数据的事件
-	Error_Args(Err,Semaphore_Create(Null,0,1,Event_Queue_Option_FIFO))
+	Error_Args(Err,Semaphore_Create(Null,0,1,Event_Queue_Option_Priority))
 	{
 		goto Net_UDP_Create_Exit2;
 	}
 	P_UDP_Node->Rx_Buffer.Semaphore=Err;
 
-	//初始化环形缓冲区
-	Ring_Queue_Init(Err,P_UDP_Node->Rx_Buffer.UDP_FIFO,Net_API_UDP_Buff_Type,Ring_Queue_Length);
-	if(Err!=Error_OK)
-	{
-		goto Net_UDP_Create_Exit3;
-	}
+	//初始化缓冲区
+	P_UDP_Node->Rx_Buffer.Buff.Max_Length=Rx_Buffer_Max_Length;
+	P_UDP_Node->Rx_Buffer.Buff.Count=0;
+	P_UDP_Node->Rx_Buffer.Buff.Size=0;
+	P_UDP_Node->Rx_Buffer.Buff.Head=Null;
+	P_UDP_Node->Rx_Buffer.Buff.End=Null;
+	P_UDP_Node->Rx_Buffer.Buff.OverFlow=false;
 
 	//Init
 	P_UDP_Node->Handle=Handle;
@@ -111,7 +115,8 @@ Net_UDP_Create_Exit2:
 	Mutex_Delete(P_UDP_Node->Rx_Buffer.Mutex);
 Net_UDP_Create_Exit1:
 	Memory_Free(P_UDP_Node);
-
+Net_UDP_Create_Exit:
+	Handle_Free(Handle);
 	return Err;
 }
 //释放一个连接
@@ -125,14 +130,10 @@ int Net_UDP_Close(int Handle)
 	{
 		return Error_Invalid_Handle;
 	}
+	//TODO 未实现
 
 
-
-
-
-
-
-
+	Handle_Free(Handle);
 	Memory_Free(P_UDP_Node);
 
 	return Error_OK;
@@ -162,7 +163,7 @@ int Net_UDP_Bind(
 	}
 
 
-	if(P_IP_Information->IP_Address_Type==Net_Core_Address_Type_IPv4)
+	if(P_IP_Information->IP_Type==Net_IP_Address_IPv4)
 	{
 
 		//绑定本地地址0.0.0.0
@@ -200,7 +201,7 @@ int Net_UDP_Bind(
 					P_UDP_Node->Bind.IP_Info.PORT=P_IP_Information->PORT;
 				}
 				memcpy(P_UDP_Node->Bind.IP_Info.IP_Address,P_IP_Information->IP_Address,Net_IPv4_Adress_Size_Byte);
-				P_UDP_Node->Bind.IP_Info.IP_Address_Type=P_IP_Information->IP_Address_Type;
+				P_UDP_Node->Bind.IP_Info.IP_Type=P_IP_Information->IP_Type;
 				P_UDP_Node->Bind.SET=true;
 
 			}
@@ -225,7 +226,7 @@ int Net_UDP_Bind(
 
 
 	}
-	else if(P_IP_Information->IP_Address_Type==Net_Core_Address_Type_IPv6)
+	else if(P_IP_Information->IP_Type==Net_IP_Address_IPv6)
 	{
 		//TODO IPv6还未实现
 		return Error_Undefined;
@@ -253,18 +254,19 @@ int Net_UDP_Connect(
 	{
 		return Error_Invalid_Parameter;
 	}
-	if(P_IP_Information->IP_Address_Type>=Net_Core_Address_Type_End || P_IP_Information->PORT==0)
+	if((P_IP_Information->IP_Type!=Net_IP_Address_IPv4 && P_IP_Information->IP_Type!=Net_IP_Address_IPv6)
+	|| P_IP_Information->PORT==0)
 	{
 		return Error_Invalid_Parameter;
 	}
-	if(P_IP_Information->IP_Address_Type==Net_Core_Address_Type_IPv4)
+	if(P_IP_Information->IP_Type==Net_IP_Address_IPv4)
 	{
 		if(memcmp(P_IP_Information->IP_Address,Net_IPv4_Adress_LocalHost,Net_IPv4_Adress_Size_Byte)==0)
 		{
 			return Error_Invalid_Parameter;
 		}
 	}
-	else if(P_IP_Information->IP_Address_Type==Net_Core_Address_Type_IPv6)
+	else if(P_IP_Information->IP_Type==Net_IP_Address_IPv6)
 	{
 		//TODO IPv6还未实现
 		return Error_Undefined;
@@ -280,7 +282,7 @@ int Net_UDP_Connect(
 
 
 	memcpy(P_UDP_Node->Connect.IP_Info.IP_Address,P_IP_Information->IP_Address,Net_IPv4_Adress_Size_Byte);
-	P_UDP_Node->Connect.IP_Info.IP_Address_Type=P_IP_Information->IP_Address_Type;
+	P_UDP_Node->Connect.IP_Info.IP_Type=P_IP_Information->IP_Type;
 	P_UDP_Node->Connect.IP_Info.PORT=P_IP_Information->PORT;
 	P_UDP_Node->Connect.SET=true;
 
@@ -290,6 +292,7 @@ int Net_UDP_Connect(
 //关闭这个连接
 int Net_UDP_Disconnect(int Handle)
 {
+	//TODO 未实现
 	return Error_OK;
 }
 //接收数据
@@ -318,68 +321,88 @@ int Net_UDP_Recv(
 	{
 		return Error_Invalid_Handle;
 	}
+	int Len=0;
 
 	Error_NoArgs_Return(Err,Semaphore_Wait(P_UDP_Node->Rx_Buffer.Semaphore,TimeOut));
 
 	//
 	Error_NoArgs_Return(Err,Mutex_Wait(P_UDP_Node->Rx_Buffer.Mutex,-1));
 
-	Net_API_UDP_Buff_Type *P_Temp_Buff;
-	bool Next_Empty=true;
-	Ring_Queue_OUT_1(Err,P_UDP_Node->Rx_Buffer.UDP_FIFO,Net_API_UDP_Buff_Type,P_Temp_Buff);
 
-	int Len=0;
-	if(Err==Error_OK)
+	Net_API_UDP_Buff_Type *P_Temp_Buff=P_UDP_Node->Rx_Buffer.Buff.Head;
+
+	if(P_Temp_Buff==Null)
+	{
+		Err=Error_Unknown;
+
+		goto Net_UDP_Recv_Exit;
+	}
+	else
 	{
 		Len=P_Temp_Buff->Size-P_Temp_Buff->Index;
 
 		if(Len<=Size)
 		{
+			bool OK;
+			List_Del_Node_From_Pointer(IN,Net_API_UDP_Buff_Type,P_UDP_Node->Rx_Buffer.Buff.Head,P_UDP_Node->Rx_Buffer.Buff.End,NEXT,P_Temp_Buff,OK);
+			if(OK==true)
+			{
+				P_UDP_Node->Rx_Buffer.Buff.Count--;
+				P_UDP_Node->Rx_Buffer.Buff.Size-=P_Temp_Buff->Size;
+
+				if(P_UDP_Node->Rx_Buffer.Buff.Head!=Null)
+				{
+					Error_NoArgs(Err,Semaphore_Release(P_UDP_Node->Rx_Buffer.Semaphore,1,Null))
+					{
+						goto Net_UDP_Recv_Exit_1;
+					}
+				}
+
+
+				Error_NoArgs(Err,Mutex_Release(P_UDP_Node->Rx_Buffer.Mutex))
+				{
+					goto Net_UDP_Recv_Exit_1;
+				}
+			}
+			else
+			{
+				Err=Error_Unknown;
+
+				goto Net_UDP_Recv_Exit;
+			}
+
 			memcpy(DATA,&P_Temp_Buff->DATA[P_Temp_Buff->Index],Len);
 
 			Memory_Free(P_Temp_Buff->DATA);
+			Memory_Free(P_Temp_Buff);
 
-			Ring_Queue_OUT_2(P_UDP_Node->Rx_Buffer.UDP_FIFO,Next_Empty);
-
-			if(Next_Empty==false)
-			{
-				Error_NoArgs(Err,Semaphore_Release(P_UDP_Node->Rx_Buffer.Semaphore,1,Null))
-				{
-					Len=Err;
-					goto Net_UDP_Recv_Exit;
-				}
-			}
 		}
 		else
 		{
 			Len=Size;
 			memcpy(DATA,&P_Temp_Buff->DATA[P_Temp_Buff->Index],Size);
-			P_Temp_Buff->Index=P_Temp_Buff->Index+Len;
+			P_Temp_Buff->Index+=Len;
 
 			Error_NoArgs(Err,Semaphore_Release(P_UDP_Node->Rx_Buffer.Semaphore,1,Null))
 			{
-				Len=Err;
+				goto Net_UDP_Recv_Exit;
+			}
+
+			Error_NoArgs(Err,Mutex_Release(P_UDP_Node->Rx_Buffer.Mutex))
+			{
 				goto Net_UDP_Recv_Exit;
 			}
 		}
-
 	}
-	else if(Err==Error_Empty)
-	{
-		Err=Error_Unknown;
-	}
-	else
-	{
-		;//
-	}
-
-	//
-Net_UDP_Recv_Exit:
-	Error_NoArgs_Return(Err,Mutex_Release(P_UDP_Node->Rx_Buffer.Mutex));
-
-
-
 	return Len;
+
+Net_UDP_Recv_Exit_1:
+	Memory_Free(P_Temp_Buff->DATA);
+	Memory_Free(P_Temp_Buff);
+Net_UDP_Recv_Exit:
+	Mutex_Release(P_UDP_Node->Rx_Buffer.Mutex);
+
+	return Err;
 }
 //发送数据
 int Net_UDP_Send(
@@ -407,7 +430,7 @@ int Net_UDP_Send(
 		return Error_Invalid_Handle;
 	}
 
-	Net_Protocol_IP_Type IP_Type;
+	Net_IP_Address_Type IP_Type;
 	uint8_t *DEST_IP_Address;
 	uint16_t DEST_PORT;
 	//如果发送 没有目标地址或者没有 Connect连接 则无法发送
@@ -416,23 +439,23 @@ int Net_UDP_Send(
 
 		DEST_IP_Address=P_IP_Information->IP_Address;
 		DEST_PORT=P_IP_Information->PORT;
-		if(P_IP_Information->IP_Address_Type==Net_Core_Address_Type_IPv4)
+		if(P_IP_Information->IP_Type==Net_IP_Address_IPv4)
 		{
-			IP_Type=Net_Protocol_IP_IPv4;
+
 			if(memcmp(P_IP_Information->IP_Address,Net_IPv4_Adress_LocalHost,Net_IPv4_Adress_Size_Byte)==0)
 			{
 				return Error_Invalid_Parameter;
 			}
 		}
-		else if(P_IP_Information->IP_Address_Type==Net_Core_Address_Type_IPv6)
+		else if(P_IP_Information->IP_Type==Net_IP_Address_IPv6)
 		{
-			IP_Type=Net_Protocol_IP_IPv6;
+
 		}
 		else
 		{
 			return Error_Invalid_Parameter;
 		}
-
+		IP_Type=P_IP_Information->IP_Type;
 	}
 	else
 	{
@@ -443,22 +466,23 @@ int Net_UDP_Send(
 
 		DEST_IP_Address=P_UDP_Node->Connect.IP_Info.IP_Address;
 		DEST_PORT=P_UDP_Node->Connect.IP_Info.PORT;
-		if(P_UDP_Node->Connect.IP_Info.IP_Address_Type==Net_Core_Address_Type_IPv4)
+		if(P_UDP_Node->Connect.IP_Info.IP_Type==Net_IP_Address_IPv4)
 		{
-			IP_Type=Net_Protocol_IP_IPv4;
+
 			if(memcmp(P_UDP_Node->Connect.IP_Info.IP_Address,Net_IPv4_Adress_LocalHost,Net_IPv4_Adress_Size_Byte)==0)
 			{
 				return Error_Invalid_Parameter;
 			}
 		}
-		else if(P_UDP_Node->Connect.IP_Info.IP_Address_Type==Net_Core_Address_Type_IPv6)
+		else if(P_UDP_Node->Connect.IP_Info.IP_Type==Net_IP_Address_IPv6)
 		{
-			IP_Type=Net_Protocol_IP_IPv6;
+
 		}
 		else
 		{
 			return Error_Unknown;
 		}
+		IP_Type=P_UDP_Node->Connect.IP_Info.IP_Type;
 	}
 
 	if(P_UDP_Node->Device_Node==Null)
@@ -469,7 +493,7 @@ int Net_UDP_Send(
 	if(P_UDP_Node->Bind.SET==false)
 	{
 		//TODO 自动分配一个端口没有实现这个功能
-		return Error_No_Bind;
+		return Net_Error_No_Bind;
 	}
 	SRC_PORT=P_UDP_Node->Bind.IP_Info.PORT;
 

@@ -16,7 +16,7 @@ int Net_UDP_Init(void);
 //创建一个连接
 int Net_UDP_Create(
 		const char *Device_Name,
-		uint32_t Ring_Queue_Length);
+		uint32_t Rx_Buffer_Max_Length);
 //释放一个连接
 int Net_UDP_Close(int Handle);
 //将连接绑定到指定IP和端口上
@@ -29,6 +29,7 @@ int Net_UDP_Connect(
 		const Net_API_IP_Information_Type *P_IP_Information);
 //关闭这个连接
 int Net_UDP_Disconnect(int Handle);
+
 //接收数据
 int Net_UDP_Recv(
 		int Handle,

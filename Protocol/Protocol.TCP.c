@@ -6,6 +6,8 @@
  */
 #include <string.h>
 
+#include "List.h"
+#include "Define.h"
 #include "Error.h"
 #include "API.h"
 
@@ -23,6 +25,8 @@
 
 #include "Protocol.TCP.Link.h"
 
+#include "API/API.TCP.h"
+
 int Protocol_TCP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_TCP_DATA_Type *P_Protocol_TCP_DATA)
 {
 	if(P_Net_Node==Null || P_Protocol_TCP_DATA==Null)
@@ -31,22 +35,17 @@ int Protocol_TCP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_TCP_DAT
 	}
 	int Err;
 
-	if((Err=Protocol_PORT_Init(&P_Protocol_TCP_DATA->PORT_DATA))!=Error_OK)
-	{
-		return Err;
-	}
+	Error_NoArgs_Return(Err,Protocol_PORT_Init(&P_Protocol_TCP_DATA->PORT_DATA));
 
-	if((Err=Protocol_TCP_Link_Init(&P_Protocol_TCP_DATA->Link_DATA))!=Error_OK)
-	{
-		return Err;
-	}
+
+	Error_NoArgs_Return(Err,Protocol_TCP_Link_Init(&P_Protocol_TCP_DATA->Link_DATA));
 
 	P_Protocol_TCP_DATA->ISN=0;
 
-
+/*
 	//TODO 临时添加了80端口 测试
 	Protocol_PORT_Add(&P_Protocol_TCP_DATA->PORT_DATA,80,(Net_Protocol_PORT_Node_Flag_Type){.DATA=0});
-
+*/
 	return Error_OK;
 }
 
@@ -63,13 +62,13 @@ int Protocol_TCP_ISN_10MS(Net_Protocol_TCP_DATA_Type *P_Protocol_TCP_DATA)
 
 
 void Protocol_TCP_Handle_Rx(
-		Net_Protocol_IP_Type IP_Type,
+		Net_IP_Address_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
 		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,
 		uint8_t *Protocol_TCP_Packet,
 		uint16_t Protocol_TCP_Packet_Size)
 {
-	if(IP_Type>=Net_Protocol_IP_End
+	if((IP_Type!=Net_IP_Address_IPv4 && IP_Type!=Net_IP_Address_IPv6)
 	|| P_Net_Node==Null
 	|| P_Pseudo_Heade==Null
 	|| Protocol_TCP_Packet==Null
@@ -93,13 +92,312 @@ void Protocol_TCP_Handle_Rx(
 	//检查端口
 	uint16_t PORT_Src=UINT16_REVERSE(P_Protocol_TCP_Packet_Heade->SRC_PORT);
 	uint16_t PORT_Dest=UINT16_REVERSE(P_Protocol_TCP_Packet_Heade->DEST_PORT);
-	uint32_t ISN=UINT32_REVERSE(P_Protocol_TCP_Packet_Heade->Sequence_Number);
 
+	uint32_t ISN_Dest=UINT32_REVERSE(P_Protocol_TCP_Packet_Heade->Sequence_Number);
+	uint32_t ACK_Dest=UINT32_REVERSE(P_Protocol_TCP_Packet_Heade->Acknowledgment_Number);
+
+	uint8_t *IP_Src=P_Pseudo_Heade->SRC_IPv4_Address;
 
 	Net_Protocol_TCP_Packet_Heade_Flags_Type Flags={
 														.DATA=UINT16_REVERSE(P_Protocol_TCP_Packet_Heade->Flags)
 													};
 
+
+	//请求连接
+	if(Flags.Syn==1)
+	{
+		//查找监听节点
+		Net_Protocol_TCP_Listen_Node_Type *Temp_Listen_Node=Null;
+		List_Find_Node_From_Symbol_2And(P_Net_Node->Protocol_TCP_DATA.Link_DATA.Listen.Head,NEXT,PORT,PORT_Dest,Condition,Net_Protocol_TCP_Link_Condition_LISTEN,Temp_Listen_Node);
+		if(Temp_Listen_Node==Null)
+		{
+			return ;
+		}
+
+
+
+		Net_Protocol_TCP_Link_Node_Type *Temp_Link_Node=Null;
+
+		//
+		Temp_Link_Node=Temp_Listen_Node->Syn.Head;
+
+		Net_Protocol_TCP_Link_Queue_Type Queue;
+		while(Temp_Link_Node!=Null)
+		{
+			if(Temp_Link_Node->IP_Type==IP_Type)
+			{
+				if(Temp_Link_Node->Dest_Info.PORT==PORT_Src)
+				{
+					if(memcmp(Temp_Link_Node->Dest_Info.IP_Address,IP_Src,IP_Type)==0)
+					{
+						Queue=Net_Protocol_TCP_Link_Queue_Listen_Syn;
+						break;
+					}
+				}
+			}
+			Temp_Link_Node=Temp_Link_Node->NEXT;
+		}
+
+		//
+		if(Temp_Link_Node==Null)
+		{
+			Temp_Link_Node=Temp_Listen_Node->Accept.Head;
+
+			while(Temp_Link_Node!=Null)
+			{
+				if(Temp_Link_Node->IP_Type==IP_Type)
+				{
+					if(Temp_Link_Node->Dest_Info.PORT==PORT_Src)
+					{
+						if(memcmp(Temp_Link_Node->Dest_Info.IP_Address,IP_Src,IP_Type)==0)
+						{
+							Queue=Net_Protocol_TCP_Link_Queue_Listen_Accept;
+							break;
+						}
+					}
+				}
+				Temp_Link_Node=Temp_Link_Node->NEXT;
+			}
+		}
+
+		//
+		if(Temp_Link_Node==Null)
+		{
+			Temp_Link_Node=P_Net_Node->Protocol_TCP_DATA.Link_DATA.Link.Head;
+
+			while(Temp_Link_Node!=Null)
+			{
+				if(Temp_Link_Node->IP_Type==IP_Type)
+				{
+					if(Temp_Link_Node->Local_Info.PORT==PORT_Dest)
+					{
+						if(Temp_Link_Node->Dest_Info.PORT==PORT_Src)
+						{
+							if(memcmp(Temp_Link_Node->Dest_Info.IP_Address,IP_Src,IP_Type)==0)
+							{
+								Queue=Net_Protocol_TCP_Link_Queue_Link;
+								break;
+							}
+						}
+					}
+
+				}
+				Temp_Link_Node=Temp_Link_Node->NEXT;
+			}
+		}
+
+		//新建一个Link
+		if(Temp_Link_Node==Null)
+		{
+			//检查队列长度
+			if(Temp_Listen_Node->Count>=Temp_Listen_Node->Backlog)
+			{
+				return ;
+			}
+			Temp_Link_Node=Memory_Malloc(sizeof(Net_Protocol_TCP_Link_Node_Type));
+			if(Temp_Link_Node==Null)
+			{
+				return ;
+			}
+//			Error_Args(Temp_Link_Node->Handle,Handle_New())
+//			{
+//				Memory_Free(Temp_Link_Node);
+//				return ;
+//			}
+
+			Temp_Link_Node->IP_Type=IP_Type;
+
+			Temp_Link_Node->Local_Info.PORT=PORT_Dest;
+			Temp_Link_Node->Local_Info.Condition=Net_Protocol_TCP_Link_Condition_SYN_RCVD;
+			Temp_Link_Node->Local_Info.ISN=P_Net_Node->Protocol_TCP_DATA.ISN;
+			Temp_Link_Node->Local_Info.Window_Size=Temp_Listen_Node->Window_Size;
+
+			Temp_Link_Node->Dest_Info.PORT=PORT_Src;
+			Temp_Link_Node->Dest_Info.Condition=Net_Protocol_TCP_Link_Condition_SYN_SENT;
+			Temp_Link_Node->Dest_Info.ISN=ISN_Dest;
+			memcpy(Temp_Link_Node->Dest_Info.IP_Address,IP_Src,IP_Type);
+
+
+			//
+
+
+
+			Temp_Listen_Node->Syn.Count++;
+			Temp_Listen_Node->Count++;
+			List_Add_Node_To_End(Temp_Listen_Node->Syn.Head,Temp_Listen_Node->Syn.End,NEXT,Temp_Link_Node);
+
+			Net_Protocol_TCP_Packet_Heade_Flags_Type Temp_Flags={.DATA=0};
+			Temp_Flags.Syn=1;
+			Temp_Flags.Ack=1;
+			//进行第一次握手
+			Protocol_TCP_Tx(
+					IP_Type,
+					P_Net_Node,
+					Temp_Link_Node->Dest_Info.IP_Address,
+					Temp_Link_Node->Local_Info.PORT,
+					Temp_Link_Node->Dest_Info.PORT,
+					Temp_Link_Node->Local_Info.ISN++,
+					++Temp_Link_Node->Dest_Info.ISN,
+					Temp_Flags,
+					Temp_Link_Node->Local_Info.Window_Size,
+					0,
+					Null,
+					0,
+					Null,
+					0);
+
+		}
+		//已经存在
+		else
+		{
+
+		}
+
+
+	}
+
+	if(Flags.Ack==1)
+	{
+		Net_Protocol_TCP_Link_Queue_Type Queue;
+
+		Net_Protocol_TCP_Listen_Node_Type *Temp_Listen_Node=Null;
+
+		Net_Protocol_TCP_Link_Node_Type *Temp_Link_Node=Null;
+
+		Temp_Link_Node=P_Net_Node->Protocol_TCP_DATA.Link_DATA.Link.Head;
+
+		while(Temp_Link_Node!=Null)
+		{
+			if(Temp_Link_Node->IP_Type==IP_Type)
+			{
+				if(Temp_Link_Node->Local_Info.PORT==PORT_Dest)
+				{
+					if(Temp_Link_Node->Dest_Info.PORT==PORT_Src)
+					{
+						if(memcmp(Temp_Link_Node->Dest_Info.IP_Address,IP_Src,IP_Type)==0)
+						{
+							Queue=Net_Protocol_TCP_Link_Queue_Link;
+							break;
+						}
+					}
+				}
+
+			}
+			Temp_Link_Node=Temp_Link_Node->NEXT;
+		}
+
+		if(Temp_Link_Node==Null)
+		{
+			//查找监听节点
+			List_Find_Node_From_Symbol_2And(P_Net_Node->Protocol_TCP_DATA.Link_DATA.Listen.Head,NEXT,PORT,PORT_Dest,Condition,Net_Protocol_TCP_Link_Condition_LISTEN,Temp_Listen_Node);
+			if(Temp_Listen_Node==Null)
+			{
+				return ;
+			}
+
+			Temp_Link_Node=Temp_Listen_Node->Accept.Head;
+
+			while(Temp_Link_Node!=Null)
+			{
+				if(Temp_Link_Node->IP_Type==IP_Type)
+				{
+					if(Temp_Link_Node->Dest_Info.PORT==PORT_Src)
+					{
+						if(memcmp(Temp_Link_Node->Dest_Info.IP_Address,IP_Src,IP_Type)==0)
+						{
+							Queue=Net_Protocol_TCP_Link_Queue_Listen_Accept;
+							break;
+						}
+					}
+				}
+				Temp_Link_Node=Temp_Link_Node->NEXT;
+			}
+
+			if(Temp_Link_Node==Null)
+			{
+				Temp_Link_Node=Temp_Listen_Node->Syn.Head;
+
+				while(Temp_Link_Node!=Null)
+				{
+					if(Temp_Link_Node->IP_Type==IP_Type)
+					{
+						if(Temp_Link_Node->Dest_Info.PORT==PORT_Src)
+						{
+							if(memcmp(Temp_Link_Node->Dest_Info.IP_Address,IP_Src,IP_Type)==0)
+							{
+								Queue=Net_Protocol_TCP_Link_Queue_Listen_Syn;
+								break;
+							}
+						}
+					}
+					Temp_Link_Node=Temp_Link_Node->NEXT;
+				}
+			}
+
+		}
+
+		if(Temp_Link_Node!=Null)
+		{
+			if(Queue==Net_Protocol_TCP_Link_Queue_Listen_Syn)
+			{
+				if(Temp_Link_Node->Local_Info.Condition==Net_Protocol_TCP_Link_Condition_SYN_RCVD)
+				{
+					if(Temp_Link_Node->Dest_Info.ISN==ISN_Dest && Temp_Link_Node->Local_Info.ISN==ACK_Dest)
+					{
+						Temp_Link_Node->Dest_Info.Condition=Net_Protocol_TCP_Link_Condition_ESTABLISHED;
+						Temp_Link_Node->Local_Info.Condition=Net_Protocol_TCP_Link_Condition_ESTABLISHED;
+
+						//将准备好的队列放进Listen_Accept
+						bool Del_OK=false;
+						List_Del_Node_From_Pointer(Del,Net_Protocol_TCP_Link_Node_Type,Temp_Listen_Node->Syn.Head,Temp_Listen_Node->Syn.End,NEXT,Temp_Link_Node,Del_OK);
+						if(Del_OK==true)
+						{
+							Temp_Listen_Node->Syn.Count--;
+
+							Temp_Listen_Node->Accept.Count++;
+							List_Add_Node_To_End(Temp_Listen_Node->Accept.Head,Temp_Listen_Node->Accept.End,NEXT,Temp_Link_Node);
+
+							Semaphore_Release(Temp_Listen_Node->Semaphore,1,Null);
+
+						}
+
+
+					}
+				}
+				else
+				{
+					//这个地方不可能出现
+				}
+			}
+		}
+		else
+		{
+
+		}
+	}
+
+	if(Flags.Reset==1)
+	{
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 	//请求连接
 	if(Flags.Syn==1)
 	{
@@ -117,14 +415,14 @@ void Protocol_TCP_Handle_Rx(
 
 		//return ;
 	}
-
+*/
 
 
 	return ;
 }
 //发送一帧TCP报文
 int Protocol_TCP_Tx(
-		Net_Protocol_IP_Type IP_Type,
+		Net_IP_Address_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
 		uint8_t *DEST_IP_Address,
 		uint16_t SRC_PORT,
@@ -139,7 +437,7 @@ int Protocol_TCP_Tx(
 		uint8_t *DATA,
 		uint16_t DATA_Size)
 {
-	if(IP_Type>=Net_Protocol_IP_End
+	if((IP_Type!=Net_IP_Address_IPv4 && IP_Type!=Net_IP_Address_IPv6)
 	|| P_Net_Node==Null
 	|| DEST_IP_Address==Null
 	|| (Option_Size!=0 && Option==Null)
@@ -233,5 +531,4 @@ Protocol_TCP_Tx_Exit2:
 Protocol_TCP_Tx_Exit1:
 	return Err;
 }
-
 

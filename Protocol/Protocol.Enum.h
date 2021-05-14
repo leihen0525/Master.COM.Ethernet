@@ -8,6 +8,7 @@
 #ifndef PROTOCOL_ENUM_H_
 #define PROTOCOL_ENUM_H_
 
+/*
 typedef enum
 {
 	Net_Protocol_IP_IPv4					=0,
@@ -16,5 +17,6 @@ typedef enum
 	Net_Protocol_IP_End,
 
 }Net_Protocol_IP_Type;
+*/
 
 #endif /* PROTOCOL_ENUM_H_ */

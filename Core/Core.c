@@ -26,6 +26,8 @@
 #include "Core.h"
 
 #include "API/API.UDP.h"
+#include "API/API.TCP.h"
+
 
 Net_Core_DATA_Type Net_Core_DATA;
 
@@ -52,7 +54,7 @@ int Net_Core_Init(void)
 //	{
 //		return Err;
 //	}
-
+	Error_NoArgs_Return(Err,Net_TCP_Init());
 	Error_NoArgs_Return(Err,Net_UDP_Init());
 
 	while(Net_Node!=Null)

@@ -25,7 +25,9 @@
 
 #include "API/API.UDP.h"
 
-int Protocol_UDP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_UDP_DATA_Type *P_Protocol_UDP_DATA)
+int Protocol_UDP_Init(
+		Net_Core_Device_Node_Type *P_Net_Node,
+		Net_Protocol_UDP_DATA_Type *P_Protocol_UDP_DATA)
 {
 	if(P_Net_Node==Null || P_Protocol_UDP_DATA==Null)
 	{
@@ -42,14 +44,14 @@ int Protocol_UDP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_UDP_DAT
 }
 
 void Protocol_UDP_Handle_Rx(
-		Net_Protocol_IP_Type IP_Type,
+		Net_IP_Address_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
 		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,
 		uint8_t *Protocol_UDP_Packet,
 		uint16_t Protocol_UDP_Packet_Size)
 {
 	int Err;
-	if(IP_Type>=Net_Protocol_IP_End
+	if((IP_Type!=Net_IP_Address_IPv4 && IP_Type!=Net_IP_Address_IPv6)
 	|| P_Net_Node==Null
 	|| P_Pseudo_Heade==Null
 	|| Protocol_UDP_Packet==Null
@@ -85,76 +87,82 @@ void Protocol_UDP_Handle_Rx(
 		return ;
 	}
 
-	Net_API_UDP_Buff_Type UDP_Buff;
+	Net_API_UDP_Buff_Type *P_UDP_Buff;
+
+	P_UDP_Buff=Memory_Malloc(sizeof(Net_API_UDP_Buff_Type));
+
+	if(P_UDP_Buff==Null)
+	{
+		return ;
+	}
 
 	int Len=Protocol_UDP_Packet_Size-sizeof(Net_Protocol_UDP_Packet_Heade_Type);
 
-	UDP_Buff.DATA=Memory_Malloc(Len);
+	P_UDP_Buff->DATA=Memory_Malloc(Len);
 	//无法分配更多空间 只能丢弃数据包
-	if(UDP_Buff.DATA==Null)
+	if(P_UDP_Buff->DATA==Null)
 	{
-		return ;
+		goto Protocol_UDP_Handle_Rx_Exit_1;
 	}
-	memcpy(UDP_Buff.DATA,&Protocol_UDP_Packet[sizeof(Net_Protocol_UDP_Packet_Heade_Type)],Len);
-	UDP_Buff.Index=0;
-	UDP_Buff.Size=Len;
-	UDP_Buff.IP_Info.PORT=UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->SRC_PORT);
 
-	if(IP_Type==Net_Protocol_IP_IPv4)
+	memcpy(P_UDP_Buff->DATA,&Protocol_UDP_Packet[sizeof(Net_Protocol_UDP_Packet_Heade_Type)],Len);
+	P_UDP_Buff->Index=0;
+	P_UDP_Buff->Size=Len;
+	P_UDP_Buff->IP_Info.PORT=UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->SRC_PORT);
+
+	if(IP_Type==Net_IP_Address_IPv4)
 	{
-		memcpy(UDP_Buff.IP_Info.IP_Address,P_Pseudo_Heade->SRC_IPv4_Address,Net_IPv4_Adress_Size_Byte);
-		UDP_Buff.IP_Info.IP_Address_Type=Net_Core_Address_Type_IPv4;
+		memcpy(P_UDP_Buff->IP_Info.IP_Address,P_Pseudo_Heade->SRC_IPv4_Address,Net_IPv4_Adress_Size_Byte);
+
 	}
-	else if(IP_Type==Net_Protocol_IP_IPv6)
+	else if(IP_Type==Net_IP_Address_IPv6)
 	{
 		//TODO IPv6 未实现
 	}
-
+	P_UDP_Buff->IP_Info.IP_Type=IP_Type;
 
 	Error_NoArgs(Err,Mutex_Wait(P_UDP_Node->Rx_Buffer.Mutex,-1))
 	{
-		return ;
+		goto Protocol_UDP_Handle_Rx_Exit_2;
 	}
-	Net_API_UDP_Buff_Type UDP_Buff_OverFlow;
-	Ring_Queue_IN(Err,P_UDP_Node->Rx_Buffer.UDP_FIFO,Net_API_UDP_Buff_Type,UDP_Buff,UDP_Buff_OverFlow);
 
-	//发生环形队列溢出
-	if(Err==Error_OverFlow)
+	if(P_UDP_Node->Rx_Buffer.Buff.Size<P_UDP_Node->Rx_Buffer.Buff.Max_Length)
 	{
-		Memory_Free(UDP_Buff_OverFlow.DATA);
+		List_Add_Node_To_End(P_UDP_Node->Rx_Buffer.Buff.Head,P_UDP_Node->Rx_Buffer.Buff.End,NEXT,P_UDP_Buff);
+		P_UDP_Node->Rx_Buffer.Buff.Count++;
+		P_UDP_Node->Rx_Buffer.Buff.Size+=Len;
+	}
+	else
+	{
+		P_UDP_Node->Rx_Buffer.Buff.OverFlow=true;
+		goto Protocol_UDP_Handle_Rx_Exit_3;
 	}
 
 	Error_NoArgs(Err,Semaphore_Release(P_UDP_Node->Rx_Buffer.Semaphore,1,Null))
 	{
-		;
+		goto Protocol_UDP_Handle_Rx_Exit_3;
 	}
 
 	Error_NoArgs(Err,Mutex_Release(P_UDP_Node->Rx_Buffer.Mutex))
 	{
-		return ;
+		goto Protocol_UDP_Handle_Rx_Exit_3;
 	}
 
+	return ;
 
 
+Protocol_UDP_Handle_Rx_Exit_3:
+	Mutex_Release(P_UDP_Node->Rx_Buffer.Mutex);
+Protocol_UDP_Handle_Rx_Exit_2:
+	Memory_Free(P_UDP_Buff->DATA);
+Protocol_UDP_Handle_Rx_Exit_1:
+	Memory_Free(P_UDP_Buff);
 
-
-	/*
-	if(UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->DEST_PORT)==6000)
-	{
-
-		for(int i=0;i<4500;i++)
-		{
-			DATA1[i]='A';
-		}
-		Protocol_UDP_Tx(IP_Type,P_Net_Node,P_Pseudo_Heade->SRC_IPv4_Address,6000,6000,DATA1,4500);
-	}
-	*/
-
-
+	return ;
 }
 
 int Protocol_UDP_Tx(
-		Net_Protocol_IP_Type IP_Type,
+		Net_IP_Address_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
 		uint8_t *DEST_IP_Address,
 		uint16_t SRC_PORT,
@@ -162,7 +170,10 @@ int Protocol_UDP_Tx(
 		uint8_t *DATA,
 		uint16_t Size)
 {
-	if(IP_Type>=Net_Protocol_IP_End || P_Net_Node==Null || DEST_IP_Address==Null || (Size!=0 && DATA==Null))
+	if((IP_Type!=Net_IP_Address_IPv4 && IP_Type!=Net_IP_Address_IPv6)
+	|| P_Net_Node==Null
+	|| DEST_IP_Address==Null
+	|| (Size!=0 && DATA==Null))
 	{
 		return Error_Invalid_Parameter;
 	}
