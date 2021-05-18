@@ -25,6 +25,21 @@ int Protocol_TCP_Link_Init(Net_Protocol_TCP_Link_DATA_Type *P_Protocol_TCP_Link_
 	P_Protocol_TCP_Link_DATA->Link.Head=Null;
 	P_Protocol_TCP_Link_DATA->Link.End=Null;
 
+	P_Protocol_TCP_Link_DATA->Timer.Retransmission.Count=0;
+	P_Protocol_TCP_Link_DATA->Timer.Retransmission.Head=Null;
+	P_Protocol_TCP_Link_DATA->Timer.Retransmission.End=Null;
+
+	P_Protocol_TCP_Link_DATA->Timer.Persistent.Count=0;
+	P_Protocol_TCP_Link_DATA->Timer.Persistent.Head=Null;
+	P_Protocol_TCP_Link_DATA->Timer.Persistent.End=Null;
+
+	P_Protocol_TCP_Link_DATA->Timer.Keeplive.Count=0;
+	P_Protocol_TCP_Link_DATA->Timer.Keeplive.Head=Null;
+	P_Protocol_TCP_Link_DATA->Timer.Keeplive.End=Null;
+
+	P_Protocol_TCP_Link_DATA->Timer.TimeWait.Count=0;
+	P_Protocol_TCP_Link_DATA->Timer.TimeWait.Head=Null;
+	P_Protocol_TCP_Link_DATA->Timer.TimeWait.End=Null;
 	return Error_OK;
 }
 
@@ -103,4 +118,89 @@ Protocol_TCP_Link_Listen_Add_Exit1:
 Protocol_TCP_Link_Listen_Add_Exit:
 	Memory_Free(Temp_Add_Node);
 	return Err;
+}
+int Protocol_TCP_Link_Add(
+		Net_Protocol_TCP_Link_DATA_Type *P_Protocol_TCP_Link_DATA,
+		int Handle,)
+{
+
+}
+int Protocol_TCP_Link_Del(
+		Net_Protocol_TCP_Link_DATA_Type *P_Protocol_TCP_Link_DATA,
+		Net_Protocol_TCP_Link_Queue_Type Queue,
+		Net_Protocol_TCP_Listen_Node_Type *Listen_Node,
+		Net_Protocol_TCP_Link_Node_Type *Del_Node)
+{
+	if(P_Protocol_TCP_Link_DATA==Null
+	|| Queue>=Net_Protocol_TCP_Link_Queue_End
+	|| Del_Node==Null)
+	{
+		return Error_Invalid_Parameter;
+	}
+
+	bool Del_OK=false;
+	switch (Queue)
+	{
+		case Net_Protocol_TCP_Link_Queue_Listen_Syn:
+		{
+			if(Listen_Node==Null)
+			{
+				return Error_Invalid_Parameter;
+			}
+			List_Del_Node_From_Pointer(Del1,Net_Protocol_TCP_Link_Node_Type,Listen_Node->Syn.Head,Listen_Node->Syn.End,NEXT,Del_Node,Del_OK);
+
+			if(Del_OK==true)
+			{
+				Listen_Node->Syn.Count--;
+				Listen_Node->Count--;
+			}
+			else
+			{
+				return Error_No_Find;
+			}
+
+		}break;
+		case Net_Protocol_TCP_Link_Queue_Listen_Accept:
+		{
+			if(Listen_Node==Null)
+			{
+				return Error_Invalid_Parameter;
+			}
+			List_Del_Node_From_Pointer(Del1,Net_Protocol_TCP_Link_Node_Type,Listen_Node->Accept.Head,Listen_Node->Accept.End,NEXT,Del_Node,Del_OK);
+
+			if(Del_OK==true)
+			{
+				Listen_Node->Accept.Count--;
+				Listen_Node->Count--;
+
+
+			}
+			else
+			{
+				return Error_No_Find;
+			}
+		}break;
+		case Net_Protocol_TCP_Link_Queue_Link:
+		{
+			List_Del_Node_From_Pointer(Del1,Net_Protocol_TCP_Link_Node_Type,P_Protocol_TCP_Link_DATA->Link.Head,P_Protocol_TCP_Link_DATA->Link.End,NEXT,Del_Node,Del_OK);
+
+			if(Del_OK==true)
+			{
+				P_Protocol_TCP_Link_DATA->Link.Count--;
+			}
+			else
+			{
+				return Error_No_Find;
+			}
+		}break;
+
+		default:
+		{
+			return Error_Invalid_Parameter;
+		}break;
+	}
+
+	//Memory_Free(Del_Node);
+
+	return Error_OK;
 }

@@ -22,4 +22,10 @@ int Protocol_TCP_Link_Listen_Add(
 		uint32_t Window_Size,
 		Net_Protocol_TCP_Listen_Node_Type **P_Add_Node_GET);
 
+int Protocol_TCP_Link_Del(
+		Net_Protocol_TCP_Link_DATA_Type *P_Protocol_TCP_Link_DATA,
+		Net_Protocol_TCP_Link_Queue_Type Queue,
+		Net_Protocol_TCP_Listen_Node_Type *Listen_Node,
+		Net_Protocol_TCP_Link_Node_Type *Del_Node);
+
 #endif /* PROTOCOL_TCP_LINK_H_ */

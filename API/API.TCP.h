@@ -43,6 +43,8 @@ int Net_TCP_Accept(
 		Net_API_IP_Information_Type *P_IP_Information,
 		int32_t TimeOut);
 
+int Net_TCP_Del_Link_Node(int Handle);
+
 //关闭一个连接的方向
 int Net_TCP_Shutdown(
 		int Handle,

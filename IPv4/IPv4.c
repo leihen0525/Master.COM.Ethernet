@@ -66,7 +66,7 @@ void IPv4_Time_10MS(void *Args)
 		return ;
 	}
 
-	Protocol_TCP_ISN_10MS(&P_Net_Node->Protocol_TCP_DATA);
+	Protocol_TCP_10MS(&P_Net_Node->Protocol_TCP_DATA);
 
 
 	if(Mutex_Wait(P_Net_Node->IPv4_DATA.Mutex_Tx,-1)!=Error_OK)

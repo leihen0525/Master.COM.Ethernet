@@ -214,6 +214,11 @@ int Net_TCP_Connect(
 		int Handle,
 		const Net_API_IP_Information_Type *P_IP_Information)
 {
+
+
+
+
+
 	return Error_OK;
 }
 
@@ -342,6 +347,26 @@ Net_TCP_Accept_Exit:
 	Memory_Free(Temp_Link_Node);
 
 	return Err;
+}
+
+int Net_TCP_Del_Link_Node(int Handle)
+{
+	int Err;
+	if(Handle<Valid_Handle)
+	{
+		return Error_Invalid_Handle;
+	}
+	Net_API_TCP_Node_Type *Del_Node=Null;
+	List_Del_Node_From_Symbol(Del1,Net_API_TCP_Node_Type,Net_API_TCP_DATA.Head,Net_API_TCP_DATA.End,NEXT,Handle,Handle,Del_Node);
+
+	if(Del_Node==Null)
+	{
+		return Error_No_Find;
+	}
+	Handle_Free(Del_Node->Handle);
+	Memory_Free(Del_Node);
+
+	return Error_OK;
 }
 
 //关闭一个连接的方向

@@ -19,57 +19,22 @@
 
 #include "Net.API.Struct.h"
 #include "Net.IP.Enum.h"
-/*
-typedef union
-{
-	uint16_t DATA;
-	struct
-	{
-		uint16_t Server							:1;
-	};
-}Net_Protocol_TCP_Link_Node_Flag_Type;
 
 
-typedef struct
-{
-	Net_Protocol_TCP_Link_Node_Flag_Type Flag;
-//	uint32_t ISN;
-//	Net_Protocol_TCP_Link_Condition_Type Condition;
-
-
-
-}Net_Protocol_TCP_Link_Node_DATA_Type;
-
-
-typedef struct Net_Protocol_TCP_Link_Node
-{
-
-	struct
-	{
-		//Net_Protocol_IP_Type Type;
-
-		uint32_t Dest[16];
-	}IP;
-
-	struct
-	{
-		uint16_t Dest;
-
-		uint16_t Local;
-	}PORT;
-
-	Net_Protocol_TCP_Link_Node_DATA_Type DATA;
-
-
-	struct Net_Protocol_TCP_Link_Node *NEXT;
-
-}Net_Protocol_TCP_Link_Node_Type;
-*/
 typedef struct Net_Protocol_TCP_Link_Node
 {
 	int Handle;
 
+	bool Server;
+
 	Net_IP_Address_Type IP_Type;
+
+
+	struct
+	{
+		//重传时间
+		uint32_t RTT;
+	}Timer;
 
 	struct
 	{
@@ -77,7 +42,7 @@ typedef struct Net_Protocol_TCP_Link_Node
 
 		uint8_t IP_Address[16];
 		uint16_t PORT;
-		uint32_t ISN;
+		uint32_t SEQ;
 
 		uint32_t Window_Size;
 	}Dest_Info;
@@ -88,7 +53,8 @@ typedef struct Net_Protocol_TCP_Link_Node
 
 
 		uint16_t PORT;
-		uint32_t ISN;
+		uint32_t SEQ;
+		uint32_t ACK;
 
 		uint32_t Window_Size;
 	}Local_Info;
@@ -130,7 +96,53 @@ typedef struct Net_Protocol_TCP_Listen_Node
 	struct Net_Protocol_TCP_Listen_Node *NEXT;
 }Net_Protocol_TCP_Listen_Node_Type;
 
+//超时重传计时器
+typedef struct Net_Protocol_TCP_Timer_Retransmission_Node
+{
+	int32_t TimeOut;
+	uint32_t Count;
 
+
+	Net_Protocol_TCP_Link_Node_Type *Link_Node;
+
+	struct Net_Protocol_TCP_Timer_Retransmission_Node *NEXT;
+}Net_Protocol_TCP_Timer_Retransmission_Node_Type;
+
+//坚持计时器
+typedef struct Net_Protocol_TCP_Timer_Persistent_Node
+{
+	int32_t TimeOut;
+	uint32_t Count;
+
+
+	Net_Protocol_TCP_Link_Node_Type *Link_Node;
+
+	struct Net_Protocol_TCP_Timer_Persistent_Node *NEXT;
+}Net_Protocol_TCP_Timer_Persistent_Node_Type;
+
+//保活计时器
+typedef struct Net_Protocol_TCP_Timer_Keeplive_Node
+{
+	int32_t TimeOut;
+	uint32_t Count;
+
+
+	Net_Protocol_TCP_Link_Node_Type *Link_Node;
+
+	struct Net_Protocol_TCP_Timer_Keeplive_Node *NEXT;
+}Net_Protocol_TCP_Timer_Keeplive_Node_Type;
+
+//时间等待计时器
+typedef struct Net_Protocol_TCP_Timer_TimeWait_Node
+{
+	int32_t TimeOut;
+	uint32_t Count;
+
+
+	Net_Protocol_TCP_Link_Node_Type *Link_Node;
+
+	struct Net_Protocol_TCP_Timer_TimeWait_Node *NEXT;
+}Net_Protocol_TCP_Timer_TimeWait_Node_Type;
 
 typedef struct
 {
@@ -148,6 +160,36 @@ typedef struct
 		Net_Protocol_TCP_Link_Node_Type *End;
 	}Link;
 
+	struct
+	{
+		struct
+		{
+			uint32_t Count;
+			Net_Protocol_TCP_Timer_Retransmission_Node_Type *Head;
+			Net_Protocol_TCP_Timer_Retransmission_Node_Type *End;
+		}Retransmission;
+
+		struct
+		{
+			uint32_t Count;
+			Net_Protocol_TCP_Timer_Persistent_Node_Type *Head;
+			Net_Protocol_TCP_Timer_Persistent_Node_Type *End;
+		}Persistent;
+
+		struct
+		{
+			uint32_t Count;
+			Net_Protocol_TCP_Timer_Keeplive_Node_Type *Head;
+			Net_Protocol_TCP_Timer_Keeplive_Node_Type *End;
+		}Keeplive;
+
+		struct
+		{
+			uint32_t Count;
+			Net_Protocol_TCP_Timer_TimeWait_Node_Type *Head;
+			Net_Protocol_TCP_Timer_TimeWait_Node_Type *End;
+		}TimeWait;
+	}Timer;
 }Net_Protocol_TCP_Link_DATA_Type;
 
 #endif /* PROTOCOL_TCP_LINK_STRUCT_H_ */

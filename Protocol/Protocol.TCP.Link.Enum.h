@@ -33,9 +33,11 @@ typedef enum
 
 typedef enum
 {
-	Net_Protocol_TCP_Link_Queue_Listen_Syn,
+	Net_Protocol_TCP_Link_Queue_Listen_Syn				=0,
 	Net_Protocol_TCP_Link_Queue_Listen_Accept,
 	Net_Protocol_TCP_Link_Queue_Link,
+
+	Net_Protocol_TCP_Link_Queue_End,
 }Net_Protocol_TCP_Link_Queue_Type;
 
 
