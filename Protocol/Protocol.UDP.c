@@ -11,6 +11,7 @@
 #include "Error.h"
 #include "API.h"
 
+#include "Net.Error.h"
 #include "Core/Core.Define.h"
 #include "Core/Core.h"
 
@@ -43,14 +44,15 @@ int Protocol_UDP_Init(
 	return Error_OK;
 }
 
-void Protocol_UDP_Handle_Rx(
+int Protocol_UDP_Handle_Rx(
 		Net_IP_Address_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
 		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,
 		uint8_t *Protocol_UDP_Packet,
 		uint16_t Protocol_UDP_Packet_Size)
 {
-	int Err;
+	int Err=Error_OK;
+
 	if((IP_Type!=Net_IP_Address_IPv4 && IP_Type!=Net_IP_Address_IPv6)
 	|| P_Net_Node==Null
 	|| P_Pseudo_Heade==Null
@@ -58,7 +60,7 @@ void Protocol_UDP_Handle_Rx(
 	|| Protocol_UDP_Packet_Size==0
 	|| Protocol_UDP_Packet_Size<sizeof(Net_Protocol_UDP_Packet_Heade_Type))
 	{
-		return ;
+		return Error_Invalid_Parameter;
 	}
 
 	if(Net_Core_CheckSum(
@@ -67,13 +69,13 @@ void Protocol_UDP_Handle_Rx(
 			(uint16_t *)Protocol_UDP_Packet,
 			Protocol_UDP_Packet_Size)!=UINT16_REVERSE(0x0000))
 	{
-		return ;
+		return Net_Error_CheckSum_Fail;
 	}
 	Net_Protocol_UDP_Packet_Heade_Type *P_Protocol_UDP_Packet_Heade=(Net_Protocol_UDP_Packet_Heade_Type *)Protocol_UDP_Packet;
 
 	if(Protocol_UDP_Packet_Size!=UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->Total_Length))
 	{
-		return ;
+		return Net_Error_Packet_Size_No_Match;
 	}
 
 	uint16_t PORT=UINT16_REVERSE(P_Protocol_UDP_Packet_Heade->DEST_PORT);
@@ -84,7 +86,7 @@ void Protocol_UDP_Handle_Rx(
 
 	if(P_UDP_Node==Null)
 	{
-		return ;
+		return Net_Error_No_Bind;
 	}
 
 	Net_API_UDP_Buff_Type *P_UDP_Buff;
@@ -93,7 +95,7 @@ void Protocol_UDP_Handle_Rx(
 
 	if(P_UDP_Buff==Null)
 	{
-		return ;
+		return Error_Allocation_Memory_Failed;
 	}
 
 	int Len=Protocol_UDP_Packet_Size-sizeof(Net_Protocol_UDP_Packet_Heade_Type);
@@ -102,6 +104,8 @@ void Protocol_UDP_Handle_Rx(
 	//无法分配更多空间 只能丢弃数据包
 	if(P_UDP_Buff->DATA==Null)
 	{
+		Err=Error_Allocation_Memory_Failed;
+
 		goto Protocol_UDP_Handle_Rx_Exit_1;
 	}
 
@@ -135,6 +139,7 @@ void Protocol_UDP_Handle_Rx(
 	else
 	{
 		P_UDP_Node->Rx_Buffer.Buff.OverFlow=true;
+		Err=Net_Error_Buff_OverFlow;
 		goto Protocol_UDP_Handle_Rx_Exit_3;
 	}
 
@@ -148,7 +153,7 @@ void Protocol_UDP_Handle_Rx(
 		goto Protocol_UDP_Handle_Rx_Exit_3;
 	}
 
-	return ;
+	return Err;
 
 
 Protocol_UDP_Handle_Rx_Exit_3:
@@ -158,7 +163,7 @@ Protocol_UDP_Handle_Rx_Exit_2:
 Protocol_UDP_Handle_Rx_Exit_1:
 	Memory_Free(P_UDP_Buff);
 
-	return ;
+	return Err;
 }
 
 int Protocol_UDP_Tx(

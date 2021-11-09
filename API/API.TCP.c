@@ -15,7 +15,7 @@
 
 #include "Protocol/Protocol.PORT.h"
 #include "Protocol/Protocol.TCP.Link.h"
-
+#include "Protocol/Protocol.TCP.h"
 
 Net_API_TCP_DATA_Type Net_API_TCP_DATA;
 
@@ -75,6 +75,7 @@ int Net_TCP_Create(
 	P_TCP_Node->Rx_Buffer_Max_Length=Rx_Buffer_Max_Length;
 	P_TCP_Node->Node=Null;
 
+	P_TCP_Node->Bind.SET=false;
 
 	//将这个创建的link添加到链表中
 	List_Add_Node_To_End(Net_API_TCP_DATA.Head,Net_API_TCP_DATA.End,NEXT,P_TCP_Node);
@@ -98,6 +99,21 @@ Net_TCP_Create_Exit:
 //释放一个连接
 int Net_TCP_Close(int Handle)
 {
+	int Err;
+	if(Handle<Valid_Handle)
+	{
+		return Error_Invalid_Handle;
+	}
+	Net_API_TCP_Node_Type *P_TCP_Node=Null;
+	List_Find_Node_From_Symbol(Net_API_TCP_DATA.Head,NEXT,Handle,Handle,P_TCP_Node);
+	if(P_TCP_Node==Null)
+	{
+		return Error_Invalid_Handle;
+	}
+
+
+
+
 	return Error_OK;
 }
 
@@ -125,9 +141,24 @@ int Net_TCP_Bind(
 		return Error_Invalid_Handle;
 	}
 
+	//当被指定为其他连接方式 则不允许在被改变绑定端口
 	if(P_TCP_Node->Type!=Net_API_TCP_Handle_Null)
 	{
 		return Error_Unknown;
+	}
+
+	//
+	if(P_TCP_Node->Bind.SET==true)
+	{
+		//如果之前IP地址长度和现在不一致 则拒绝
+		if(P_TCP_Node->Bind.IP_Info.IP_Type!=P_IP_Information->IP_Type)
+		{
+			return Net_Error_IP_Address_Type_Inconformity;
+		}
+
+		Error_Args_Return(Err,Protocol_PORT_Del(&P_TCP_Node->Device_Node->Protocol_TCP_DATA.PORT_DATA, P_TCP_Node->Bind.IP_Info.PORT));
+
+		P_TCP_Node->Bind.SET=false;
 	}
 
 	if(P_IP_Information->IP_Type==Net_IP_Address_IPv4)
@@ -214,9 +245,137 @@ int Net_TCP_Connect(
 		int Handle,
 		const Net_API_IP_Information_Type *P_IP_Information)
 {
+	int Err;
+	if(Handle<Valid_Handle)
+	{
+		return Error_Invalid_Handle;
+	}
+
+	if(P_IP_Information==Null)
+	{
+		return Error_Invalid_Parameter;
+	}
+	if(P_IP_Information->IP_Type!=Net_IP_Address_IPv4 && P_IP_Information->IP_Type!=Net_IP_Address_IPv6)
+	{
+		return Error_Invalid_Parameter;
+	}
+	Net_API_TCP_Node_Type *P_TCP_Node=Null;
+	List_Find_Node_From_Symbol(Net_API_TCP_DATA.Head,NEXT,Handle,Handle,P_TCP_Node);
+	if(P_TCP_Node==Null)
+	{
+		return Error_Invalid_Handle;
+	}
+	if(P_TCP_Node->Device_Node==Null)
+	{
+		return Error_Unknown;
+	}
+	//第一次进来 或者 多次进来 是被允许
+	if(P_TCP_Node->Type!=Net_API_TCP_Handle_Null && P_TCP_Node->Type!=Net_API_TCP_Handle_Link_Connect)
+	{
+		return Error_Unknown;
+	}
+
+	//当前link没有绑定本地端口 则动态分配一个
+	if(P_TCP_Node->Bind.SET==false)
+	{
+		Error_Args_Return(Err,
+				Protocol_PORT_New(
+						&P_TCP_Node->Device_Node->Protocol_TCP_DATA.PORT_DATA,
+						(Net_Protocol_PORT_Node_Flag_Type){.DATA=0},
+						Net_Protocol_PORT_Dynamic_Or_Private_Ports_Begin,
+						Net_Protocol_PORT_Dynamic_Or_Private_Ports_End));
+		P_TCP_Node->Bind.IP_Info.PORT=Err;
+
+		if(P_IP_Information->IP_Type==Net_IP_Address_IPv4)
+		{
+			memcpy(P_TCP_Node->Bind.IP_Info.IP_Address,Net_IPv4_Adress_LocalHost,Net_IPv4_Adress_Size_Byte);
+		}
+		else
+		{
+			//TODO IPv6
+		}
+
+		P_TCP_Node->Bind.IP_Info.IP_Type=P_IP_Information->IP_Type;
+		P_TCP_Node->Bind.SET=true;
+	}
+	else
+	{
+		//如果之前IP地址长度和现在不一致 则拒绝
+		if(P_TCP_Node->Bind.IP_Info.IP_Type!=P_IP_Information->IP_Type)
+		{
+			return Net_Error_IP_Address_Type_Inconformity;
+		}
+	}
+
+	Net_Protocol_TCP_Link_Node_Type *Temp_Link_Node=Null;
+	//
+	if(P_TCP_Node->Link_Node==Null)
+	{
+		Temp_Link_Node=Memory_Malloc(sizeof(Net_Protocol_TCP_Link_Node_Type));
+		if(Temp_Link_Node==Null)
+		{
+			return Error_Allocation_Memory_Failed;
+		}
+		Temp_Link_Node->Handle=P_TCP_Node->Handle;
+		Temp_Link_Node->Server=false;
+		Temp_Link_Node->IP_Type=P_IP_Information->IP_Type;
+
+		Temp_Link_Node->Local_Info.Condition=Net_Protocol_TCP_Link_Condition_CLOSED;
+
+		Temp_Link_Node->Local_Info.Window_Size=P_TCP_Node->Rx_Buffer_Max_Length;
+
+		P_TCP_Node->Link_Node=Temp_Link_Node;
+
+		P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.Count++;
+		List_Add_Node_To_End(P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.Head,P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.End,NEXT,Temp_Link_Node);
+	}
+	else
+	{
+		Temp_Link_Node=P_TCP_Node->Link_Node;
+	}
+
+	if(Temp_Link_Node->Local_Info.Condition!=Net_Protocol_TCP_Link_Condition_CLOSED)
+	{
+		return Net_Error_Already_Connect;
+	}
+
+	P_TCP_Node->Type=Net_API_TCP_Handle_Link_Connect;
 
 
+	memcpy(Temp_Link_Node->Dest_Info.IP_Address,P_IP_Information->IP_Address,P_IP_Information->IP_Type);
+	Temp_Link_Node->Dest_Info.PORT=P_IP_Information->PORT;
 
+	Temp_Link_Node->Local_Info.PORT=P_TCP_Node->Bind.IP_Info.PORT;
+
+	Temp_Link_Node->Local_Info.SEQ=P_TCP_Node->Device_Node->Protocol_TCP_DATA.ISN;
+	Temp_Link_Node->Local_Info.ACK=Net_Protocol_TCP_Link_LEN_SYN;
+
+	Temp_Link_Node->Local_Info.Condition=Net_Protocol_TCP_Link_Condition_SYN_SENT;
+	Temp_Link_Node->Dest_Info.Condition=Net_Protocol_TCP_Link_Condition_SYN_RCVD;
+
+	Net_Protocol_TCP_Packet_Heade_Flags_Type Flags={.DATA=0};
+	Flags.Syn=1;
+
+	Error_NoArgs_Return(Err,
+			Protocol_TCP_Tx(
+					Temp_Link_Node->IP_Type,
+					P_TCP_Node->Device_Node,
+					Temp_Link_Node->Dest_Info.IP_Address,
+					Temp_Link_Node->Local_Info.PORT,
+					Temp_Link_Node->Dest_Info.PORT,
+					Temp_Link_Node->Local_Info.SEQ,
+					0,
+					Flags,
+					Temp_Link_Node->Local_Info.Window_Size,
+					0,
+					Null,
+					0,
+					Null,
+					0));
+
+	//TODO 开启 超时重发定时器
+
+	//TODO 等待连接成功
 
 
 	return Error_OK;
@@ -261,7 +420,7 @@ int Net_TCP_Listen(
 	}
 
 	Error_NoArgs_Return(Err,
-			Protocol_TCP_Link_Listen_Add(
+			Protocol_TCP_Link_Add_Listen_Node_To_Listen_List(
 					&P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA,
 					Handle,
 					P_TCP_Node->Bind.IP_Info.IP_Type,

@@ -16,7 +16,7 @@
 
 int Protocol_UDP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_UDP_DATA_Type *P_Protocol_UDP_DATA);
 
-void Protocol_UDP_Handle_Rx(
+int Protocol_UDP_Handle_Rx(
 		Net_IP_Address_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
 		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,

@@ -265,6 +265,29 @@ void Protocol_TCP_Handle_Rx(
 
 	if(Temp_Link_Node!=Null)
 	{
+		//ACK
+		if(Flags.Ack==1)
+		{
+			//TODO  关闭 超时重传计时器
+
+			if((Temp_Link_Node->Local_Info.SEQ+Temp_Link_Node->Local_Info.ACK)==ACK_Dest)
+			{
+
+			}
+			else
+			{
+				//TODO ACK错误 出现丢帧
+				return ;
+			}
+
+
+
+
+
+		}
+
+
+
 		//Server
 		if(Temp_Link_Node->Server==true)
 		{
@@ -278,7 +301,7 @@ void Protocol_TCP_Handle_Rx(
 						if(Queue==Net_Protocol_TCP_Link_Queue_Listen_Syn)
 						{
 							//
-							if((Temp_Link_Node->Local_Info.SEQ+Temp_Link_Node->Local_Info.ACK)==ACK_Dest)
+							//if((Temp_Link_Node->Local_Info.SEQ+Temp_Link_Node->Local_Info.ACK)==ACK_Dest)
 							{
 								if(Temp_Link_Node->Dest_Info.SEQ==SEQ_Dest)
 								{
@@ -312,7 +335,7 @@ void Protocol_TCP_Handle_Rx(
 
 								}
 							}
-							else
+							//else
 							{
 
 							}
@@ -369,6 +392,7 @@ void Protocol_TCP_Handle_Rx(
 
 				case Net_Protocol_TCP_Link_Condition_ESTABLISHED:
 				{
+					/*
 					if(Flags.Ack==1)
 					{
 						if((uint32_t)(Temp_Link_Node->Local_Info.SEQ+Temp_Link_Node->Local_Info.ACK)==ACK_Dest)
@@ -391,7 +415,7 @@ void Protocol_TCP_Handle_Rx(
 					{
 						//
 					}
-
+					*/
 
 
 					if(Flags.Fin==1)
@@ -466,7 +490,7 @@ void Protocol_TCP_Handle_Rx(
 				{
 					if(Flags.Ack==1)
 					{
-						if((uint32_t)(Temp_Link_Node->Local_Info.SEQ+Temp_Link_Node->Local_Info.ACK)==ACK_Dest)
+						//if((uint32_t)(Temp_Link_Node->Local_Info.SEQ+Temp_Link_Node->Local_Info.ACK)==ACK_Dest)
 						{
 							if(Temp_Link_Node->Dest_Info.SEQ==SEQ_Dest)
 							{
@@ -478,18 +502,29 @@ void Protocol_TCP_Handle_Rx(
 
 								//TODO 删除这个节点
 
-								Error_NoArgs(Err,Protocol_TCP_Link_Del(&P_Net_Node->Protocol_TCP_DATA.Link_DATA, Queue, Temp_Listen_Node, Temp_Link_Node))
-								{
-									return ;
-								}
 
-								if(Queue==Net_Protocol_TCP_Link_Queue_Listen_Accept)
+								if(Queue==Net_Protocol_TCP_Link_Queue_Listen_Syn)
 								{
+									Error_NoArgs(Err,Protocol_TCP_Link_Del_Link_Node_From_Listen_Syn_List(Temp_Listen_Node, Temp_Link_Node,false))
+									{
+										return ;
+									}
+								}
+								else if(Queue==Net_Protocol_TCP_Link_Queue_Listen_Accept)
+								{
+									Error_NoArgs(Err,Protocol_TCP_Link_Del_Link_Node_From_Listen_Accept_List(Temp_Listen_Node, Temp_Link_Node,false))
+									{
+										return ;
+									}
 									//???
 									Semaphore_Wait(Temp_Listen_Node->Semaphore,1);
 								}
 								else if(Queue==Net_Protocol_TCP_Link_Queue_Link)
 								{
+									Error_NoArgs(Err,Protocol_TCP_Link_Del_Link_Node_From_Link_List(&P_Net_Node->Protocol_TCP_DATA.Link_DATA, Temp_Link_Node,false))
+									{
+										return ;
+									}
 									//
 									Net_TCP_Del_Link_Node(Temp_Link_Node->Handle);
 
@@ -497,10 +532,10 @@ void Protocol_TCP_Handle_Rx(
 								Memory_Free(Temp_Link_Node);
 							}
 						}
-						else
+						//else
 						{
 							//TODO ACK错误 出现丢帧
-							return ;
+							//return ;
 						}
 					}
 					else
@@ -529,11 +564,79 @@ void Protocol_TCP_Handle_Rx(
 				}break;
 				case Net_Protocol_TCP_Link_Condition_SYN_SENT:
 				{
+					if(Flags.Syn==1)
+					{
+						if(Flags.Ack==1)
+						{
+							Temp_Link_Node->Dest_Info.SEQ=SEQ_Dest;
+							Temp_Link_Node->Dest_Info.Condition=Net_Protocol_TCP_Link_Condition_ESTABLISHED;
 
+							Temp_Link_Node->Local_Info.SEQ+=Temp_Link_Node->Local_Info.ACK;
+							Temp_Link_Node->Local_Info.ACK=0;
+							Temp_Link_Node->Local_Info.Condition=Net_Protocol_TCP_Link_Condition_ESTABLISHED;
+
+							Temp_Link_Node->Dest_Info.SEQ+=Net_Protocol_TCP_Link_LEN_SYN;
+
+
+							Net_Protocol_TCP_Packet_Heade_Flags_Type Temp_Flags={.DATA=0};
+							Temp_Flags.Ack=1;
+							//进行第一次握手
+							Protocol_TCP_Tx(
+									IP_Type,
+									P_Net_Node,
+									Temp_Link_Node->Dest_Info.IP_Address,
+									Temp_Link_Node->Local_Info.PORT,
+									Temp_Link_Node->Dest_Info.PORT,
+									Temp_Link_Node->Local_Info.SEQ,
+									Temp_Link_Node->Dest_Info.SEQ,
+									Temp_Flags,
+									Temp_Link_Node->Local_Info.Window_Size,
+									0,
+									Null,
+									0,
+									Null,
+									0);
+							//TODO 开启
+
+						}
+					}
 				}break;
 				case Net_Protocol_TCP_Link_Condition_ESTABLISHED:
 				{
+					if(Flags.Syn==1)
+					{
+						if(Flags.Ack==1)
+						{
+							Temp_Link_Node->Dest_Info.SEQ=SEQ_Dest;
+							//Temp_Link_Node->Dest_Info.Condition=Net_Protocol_TCP_Link_Condition_ESTABLISHED;
 
+							//Temp_Link_Node->Local_Info.SEQ+=Temp_Link_Node->Local_Info.ACK;
+							Temp_Link_Node->Local_Info.ACK=0;
+							//Temp_Link_Node->Local_Info.Condition=Net_Protocol_TCP_Link_Condition_ESTABLISHED;
+
+							Temp_Link_Node->Dest_Info.SEQ+=Net_Protocol_TCP_Link_LEN_SYN;
+
+							Net_Protocol_TCP_Packet_Heade_Flags_Type Temp_Flags={.DATA=0};
+							Temp_Flags.Ack=1;
+							//进行第一次握手
+							Protocol_TCP_Tx(
+									IP_Type,
+									P_Net_Node,
+									Temp_Link_Node->Dest_Info.IP_Address,
+									Temp_Link_Node->Local_Info.PORT,
+									Temp_Link_Node->Dest_Info.PORT,
+									Temp_Link_Node->Local_Info.SEQ,
+									Temp_Link_Node->Dest_Info.SEQ,
+									Temp_Flags,
+									Temp_Link_Node->Local_Info.Window_Size,
+									0,
+									Null,
+									0,
+									Null,
+									0);
+							//TODO 开启
+						}
+					}
 				}break;
 				case Net_Protocol_TCP_Link_Condition_FIN_WAIT_1:
 				{

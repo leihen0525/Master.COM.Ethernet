@@ -102,6 +102,8 @@ typedef struct Net_Protocol_TCP_Timer_Retransmission_Node
 	int32_t TimeOut;
 	uint32_t Count;
 
+	uint16_t Flags;
+
 
 	Net_Protocol_TCP_Link_Node_Type *Link_Node;
 
