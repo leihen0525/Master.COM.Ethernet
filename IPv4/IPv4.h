@@ -66,8 +66,8 @@ int IPv4_Rx_Node_Insert_DATA(
 
 int IPv4_Pseudo_Heade_Init(
 		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,
-		uint8_t *SRC_IPv4_Address,
-		uint8_t *DEST_IPv4_Address,
+		uint8_t *P_SRC_IPv4_Address,
+		uint8_t *P_DEST_IPv4_Address,
 
 		uint8_t Protocol,
 

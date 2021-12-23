@@ -11,22 +11,22 @@
 
 #include "Core.Define.h"
 
-#include "Core.Ethernet.h"
+#include "Core.Ethernet/Core.Ethernet.h"
 
 #include "Includes/Net.Device.Enum.h"
 
-#include "IPv4/IPv4.ARP.h"
+#include "IPv4/IPv4.ARP/IPv4.ARP.h"
 #include "IPv4/IPv4.h"
-#include "Protocol/Protocol.TCP.h"
-#include "Protocol/Protocol.UDP.h"
+#include "Protocol/Protocol.TCP/Protocol.TCP.h"
+#include "Protocol/Protocol.UDP/Protocol.UDP.h"
 //#include "Session/Session.h"
 //#include "Socket/Socket.h"
 
 
 #include "Core.h"
 
-#include "API/API.UDP.h"
-#include "API/API.TCP.h"
+#include "API/API.UDP/API.UDP.h"
+#include "API/API.TCP/API.TCP.h"
 
 
 Net_Core_DATA_Type Net_Core_DATA;
@@ -86,7 +86,19 @@ __task void Net_Core_Task_TX(void *Args)
 
 	while(1)
 	{
-		IPv4_Handle_Tx(Net_Node);
+		switch (Net_Node->Device_Type)
+		{
+			case Net_Device_Ethernet:
+			{
+				Net_Core_Ethernet_Handle_Tx(Net_Node);
+			}break;
+
+			default:
+			{
+
+			}break;
+		}
+
 
 	}
 }

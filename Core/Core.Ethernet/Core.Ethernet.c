@@ -7,23 +7,34 @@
 #include <string.h>
 #include "Error.h"
 #include "API.h"
-#include "Core.Define.h"
+#include "Core/Core.Define.h"
 
 #include "Core.Ethernet.Define.h"
 #include "Core.Ethernet.Struct.h"
 #include "Core.Ethernet.h"
 
-#include "IPv4/IPv4.ARP.h"
+#include "IPv4/IPv4.ARP/IPv4.ARP.h"
 #include "IPv4/IPv4.h"
 
+int Net_Core_Ethernet_Handle_Tx(Net_Core_Device_Node_Type *P_Net_Node)
+{
 
-void Net_Core_Ethernet_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *DATA)
+	if(P_Net_Node==Null)
+	{
+		return Error_Invalid_Parameter;
+	}
+
+	IPv4_Handle_Tx(P_Net_Node);
+
+	return Error_OK;
+}
+int Net_Core_Ethernet_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *DATA)
 {
 	Net_Core_Ethernet_Packet_Heade_Type *Ethernet_Packet_Heade=(Net_Core_Ethernet_Packet_Heade_Type *)DATA;
 
 	if(P_Net_Node==Null || Ethernet_Packet_Heade==Null)
 	{
-		return;
+		return Error_Invalid_Parameter;
 	}
 
 	switch (UINT16_REVERSE(Ethernet_Packet_Heade->Length_Type))
@@ -46,6 +57,7 @@ void Net_Core_Ethernet_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *
 		}break;
 	}
 
+	return Error_OK;
 }
 
 int Net_Core_Ethernet_Tx_DATA(

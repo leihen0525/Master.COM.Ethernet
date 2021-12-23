@@ -9,7 +9,7 @@
 #define PROTOCOL_UDP_STRUCT_H_
 
 #include "Master.Stdint.h"
-#include "Protocol.PORT.Struct.h"
+#include "Protocol/Protocol.PORT.Struct.h"
 
 #pragma pack(1)
 

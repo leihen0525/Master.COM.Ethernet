@@ -10,6 +10,7 @@
 
 typedef enum
 {
+	Net_Error_Exceed_Backlog_Link			=-108,					//超过Backlog定义的link数量
 	Net_Error_Buff_OverFlow					=-107,					//缓冲区溢出
 	Net_Error_Packet_Size_No_Match			=-106,					//数据包长度不匹配
 	Net_Error_CheckSum_Fail					=-105,					//CheckSum失败

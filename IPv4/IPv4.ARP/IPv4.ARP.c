@@ -9,13 +9,13 @@
 #include "Error.h"
 #include "API.h"
 #include "Core/Core.Define.h"
-#include "Core/Core.Ethernet.Enum.h"
+#include "Core/Core.Ethernet/Core.Ethernet.Enum.h"
 #include "Core/Core.h"
-#include "IPv4.Define.h"
+#include "IPv4/IPv4.Define.h"
 #include "IPv4.ARP.Define.h"
 #include "IPv4.ARP.Struct.h"
 #include "IPv4.ARP.h"
-#include "IPv4.h"
+#include "IPv4/IPv4.h"
 
 
 Net_IPv4_ARP_Cache_Node_Type Static_Net_IPv4_ARP_Cache_Node[]=

@@ -22,9 +22,9 @@
 
 #include "Protocol.UDP.h"
 
-#include "Protocol.PORT.h"
+#include "Protocol/Protocol.PORT.h"
 
-#include "API/API.UDP.h"
+#include "API/API.UDP/API.UDP.h"
 
 int Protocol_UDP_Init(
 		Net_Core_Device_Node_Type *P_Net_Node,
@@ -47,7 +47,7 @@ int Protocol_UDP_Init(
 int Protocol_UDP_Handle_Rx(
 		Net_IP_Address_Type IP_Type,
 		Net_Core_Device_Node_Type *P_Net_Node,
-		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,
+		Net_IPv4_Packet_Pseudo_Heade_Type *P_IPv4_Pseudo_Heade,
 		uint8_t *Protocol_UDP_Packet,
 		uint16_t Protocol_UDP_Packet_Size)
 {
@@ -55,21 +55,31 @@ int Protocol_UDP_Handle_Rx(
 
 	if((IP_Type!=Net_IP_Address_IPv4 && IP_Type!=Net_IP_Address_IPv6)
 	|| P_Net_Node==Null
-	|| P_Pseudo_Heade==Null
+	|| (P_IPv4_Pseudo_Heade==Null && IP_Type==Net_IP_Address_IPv4)
 	|| Protocol_UDP_Packet==Null
 	|| Protocol_UDP_Packet_Size==0
 	|| Protocol_UDP_Packet_Size<sizeof(Net_Protocol_UDP_Packet_Heade_Type))
 	{
 		return Error_Invalid_Parameter;
 	}
-
-	if(Net_Core_CheckSum(
-			(uint16_t *)P_Pseudo_Heade,
-			sizeof(Net_IPv4_Packet_Pseudo_Heade_Type),
-			(uint16_t *)Protocol_UDP_Packet,
-			Protocol_UDP_Packet_Size)!=UINT16_REVERSE(0x0000))
+	if(IP_Type==Net_IP_Address_IPv4)
 	{
-		return Net_Error_CheckSum_Fail;
+		if(Net_Core_CheckSum(
+				(uint16_t *)P_IPv4_Pseudo_Heade,
+				sizeof(Net_IPv4_Packet_Pseudo_Heade_Type),
+				(uint16_t *)Protocol_UDP_Packet,
+				Protocol_UDP_Packet_Size)!=UINT16_REVERSE(0x0000))
+		{
+			return Net_Error_CheckSum_Fail;
+		}
+	}
+	else if(IP_Type==Net_IP_Address_IPv6)
+	{
+		//TODO IPv6 未实现
+	}
+	else
+	{
+		return Error_Invalid_Parameter;
 	}
 	Net_Protocol_UDP_Packet_Heade_Type *P_Protocol_UDP_Packet_Heade=(Net_Protocol_UDP_Packet_Heade_Type *)Protocol_UDP_Packet;
 
@@ -116,7 +126,7 @@ int Protocol_UDP_Handle_Rx(
 
 	if(IP_Type==Net_IP_Address_IPv4)
 	{
-		memcpy(P_UDP_Buff->IP_Info.IP_Address,P_Pseudo_Heade->SRC_IPv4_Address,Net_IPv4_Adress_Size_Byte);
+		memcpy(P_UDP_Buff->IP_Info.IP_Address,P_IPv4_Pseudo_Heade->SRC_IPv4_Address,Net_IPv4_Adress_Size_Byte);
 
 	}
 	else if(IP_Type==Net_IP_Address_IPv6)
@@ -183,25 +193,40 @@ int Protocol_UDP_Tx(
 		return Error_Invalid_Parameter;
 	}
 	int Err=Error_OK;
+	uint8_t *Protocol_UDP_Packet=Null;
 
-	Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade=Memory_Malloc(sizeof(Net_IPv4_Packet_Pseudo_Heade_Type));
+	Net_IPv4_Packet_Pseudo_Heade_Type *P_IPv4_Pseudo_Heade=Null;
+	Net_Protocol_UDP_Packet_Heade_Type *P_Protocol_UDP_Packet_Heade=Null;
 
-	if(P_Pseudo_Heade==Null)
+	if(IP_Type==Net_IP_Address_IPv4)
 	{
-		Err=Error_Allocation_Memory_Failed;
-		goto Protocol_UDP_Tx_Exit1;
+		P_IPv4_Pseudo_Heade=Memory_Malloc(sizeof(Net_IPv4_Packet_Pseudo_Heade_Type));
+
+		if(P_IPv4_Pseudo_Heade==Null)
+		{
+			Err=Error_Allocation_Memory_Failed;
+			goto Protocol_UDP_Tx_Exit1;
+		}
+		if((Err=IPv4_Pseudo_Heade_Init(
+				P_IPv4_Pseudo_Heade,
+				P_Net_Node->IPv4_DATA.IP_Address.IP.Address,
+				DEST_IP_Address,
+				Net_IPv4_Protocol_UDP,
+				sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size))!=Error_OK)
+		{
+			goto Protocol_UDP_Tx_Exit2;
+		}
 	}
-	if((Err=IPv4_Pseudo_Heade_Init(
-			P_Pseudo_Heade,
-			P_Net_Node->IPv4_DATA.IP_Address.IP.Address,
-			DEST_IP_Address,
-			Net_IPv4_Protocol_UDP,
-			sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size))!=Error_OK)
+	else if(IP_Type==Net_IP_Address_IPv6)
 	{
-		goto Protocol_UDP_Tx_Exit2;
+		//TODO IPv6 未实现
+	}
+	else
+	{
+		return Error_Invalid_Parameter;
 	}
 
-	uint8_t *Protocol_UDP_Packet=Memory_Malloc(sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size);
+	Protocol_UDP_Packet=Memory_Malloc(sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size);
 
 	if(Protocol_UDP_Packet==Null)
 	{
@@ -209,7 +234,7 @@ int Protocol_UDP_Tx(
 		goto Protocol_UDP_Tx_Exit2;
 	}
 
-	Net_Protocol_UDP_Packet_Heade_Type *P_Protocol_UDP_Packet_Heade=(Net_Protocol_UDP_Packet_Heade_Type *)Protocol_UDP_Packet;
+	P_Protocol_UDP_Packet_Heade=(Net_Protocol_UDP_Packet_Heade_Type *)Protocol_UDP_Packet;
 
 	P_Protocol_UDP_Packet_Heade->SRC_PORT=UINT16_REVERSE(SRC_PORT);
 	P_Protocol_UDP_Packet_Heade->DEST_PORT=UINT16_REVERSE(DEST_PORT);
@@ -218,20 +243,31 @@ int Protocol_UDP_Tx(
 
 	memcpy(&Protocol_UDP_Packet[sizeof(Net_Protocol_UDP_Packet_Heade_Type)],DATA,Size);
 
-	uint16_t CheckSum=Net_Core_CheckSum(
-			(uint16_t *)P_Pseudo_Heade,
-			sizeof(Net_IPv4_Packet_Pseudo_Heade_Type),
-			(uint16_t *)Protocol_UDP_Packet,
-			sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size);
-	P_Protocol_UDP_Packet_Heade->CheckSum=UINT16_REVERSE(CheckSum);
+	if(IP_Type==Net_IP_Address_IPv4)
+	{
+		uint16_t CheckSum=Net_Core_CheckSum(
+				(uint16_t *)P_IPv4_Pseudo_Heade,
+				sizeof(Net_IPv4_Packet_Pseudo_Heade_Type),
+				(uint16_t *)Protocol_UDP_Packet,
+				sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size);
+		P_Protocol_UDP_Packet_Heade->CheckSum=UINT16_REVERSE(CheckSum);
 
-	Err=IPv4_Tx_Pend_DATA(
-				P_Net_Node,
-				Net_IPv4_Protocol_UDP,
-				DEST_IP_Address,
-				Protocol_UDP_Packet,
-				sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size,
-				true);
+		Err=IPv4_Tx_Pend_DATA(
+					P_Net_Node,
+					Net_IPv4_Protocol_UDP,
+					DEST_IP_Address,
+					Protocol_UDP_Packet,
+					sizeof(Net_Protocol_UDP_Packet_Heade_Type)+Size,
+					true);
+	}
+	else if(IP_Type==Net_IP_Address_IPv6)
+	{
+		//TODO IPv6 未实现
+	}
+	else
+	{
+		return Error_Invalid_Parameter;
+	}
 
 	if(Err==Error_OK)
 	{
@@ -246,7 +282,7 @@ Protocol_UDP_Tx_Exit3:
 	Memory_Free(Protocol_UDP_Packet);
 
 Protocol_UDP_Tx_Exit2:
-	Memory_Free(P_Pseudo_Heade);
+	Memory_Free(P_IPv4_Pseudo_Heade);
 
 Protocol_UDP_Tx_Exit1:
 	return Err;

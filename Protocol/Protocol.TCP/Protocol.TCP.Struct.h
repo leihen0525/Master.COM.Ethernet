@@ -10,7 +10,7 @@
 
 #include "Master.Stdint.h"
 
-#include "Protocol.PORT.Struct.h"
+#include "Protocol/Protocol.PORT.Struct.h"
 
 #include "Protocol.TCP.Link.Struct.h"
 

@@ -11,9 +11,9 @@
 #include "Master.Stdint.h"
 #include "Includes/Net.Device.Struct.h"
 #include "IPv4/IPv4.Struct.h"
-#include "IPv4/IPv4.ARP.Struct.h"
-#include "Protocol/Protocol.TCP.Struct.h"
-#include "Protocol/Protocol.UDP.Struct.h"
+#include "IPv4/IPv4.ARP/IPv4.ARP.Struct.h"
+#include "Protocol/Protocol.TCP/Protocol.TCP.Struct.h"
+#include "Protocol/Protocol.UDP/Protocol.UDP.Struct.h"
 //#include "Session/Session.Struct.h"
 
 

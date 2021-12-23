@@ -41,7 +41,11 @@ int Protocol_PORT_Add(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,uint16_t
 }
 
 //
-int Protocol_PORT_New(Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,Net_Protocol_PORT_Node_Flag_Type Flag,uint16_t Begin_PORT,uint16_t End_PORT)
+int Protocol_PORT_New(
+		Net_Protocol_PORT_DATA_Type *P_Protocol_PORT_DATA,
+		Net_Protocol_PORT_Node_Flag_Type Flag,
+		uint16_t Begin_PORT,
+		uint16_t End_PORT)
 {
 	if(P_Protocol_PORT_DATA==Null || Begin_PORT>End_PORT)
 	{

@@ -13,12 +13,12 @@
 #include "IPv4.Define.h"
 #include "Net.IPv4.Define.h"
 
-#include "IPv4.ICMP.h"
+#include "IPv4.ICMP/IPv4.ICMP.h"
 
 #include "IPv4.h"
-#include "IPv4.ARP.h"
-#include "Protocol/Protocol.UDP.h"
-#include "Protocol/Protocol.TCP.h"
+#include "IPv4.ARP/IPv4.ARP.h"
+#include "Protocol/Protocol.UDP/Protocol.UDP.h"
+#include "Protocol/Protocol.TCP/Protocol.TCP.h"
 
 #include "Net.IP.Enum.h"
 
@@ -1367,19 +1367,19 @@ IPv4_Rx_Node_Insert_DATA_Exit:
 
 int IPv4_Pseudo_Heade_Init(
 		Net_IPv4_Packet_Pseudo_Heade_Type *P_Pseudo_Heade,
-		uint8_t *SRC_IPv4_Address,
-		uint8_t *DEST_IPv4_Address,
+		uint8_t *P_SRC_IPv4_Address,
+		uint8_t *P_DEST_IPv4_Address,
 
 		uint8_t Protocol,
 
 		uint16_t Length)
 {
-	if(P_Pseudo_Heade==Null || SRC_IPv4_Address==Null || DEST_IPv4_Address==Null)
+	if(P_Pseudo_Heade==Null || P_SRC_IPv4_Address==Null || P_DEST_IPv4_Address==Null)
 	{
 		return Error_Invalid_Parameter;
 	}
-	memcpy(P_Pseudo_Heade->SRC_IPv4_Address,SRC_IPv4_Address,4);
-	memcpy(P_Pseudo_Heade->DEST_IPv4_Address,DEST_IPv4_Address,4);
+	memcpy(P_Pseudo_Heade->SRC_IPv4_Address,P_SRC_IPv4_Address,4);
+	memcpy(P_Pseudo_Heade->DEST_IPv4_Address,P_DEST_IPv4_Address,4);
 	P_Pseudo_Heade->mbz=0;
 	P_Pseudo_Heade->Protocol=Protocol;
 

@@ -11,7 +11,7 @@
 #include "Master.Stdint.h"
 #include "Core/Core.Struct.h"
 #include "IPv4/IPv4.Struct.h"
-#include "Protocol.Enum.h"
+#include "Protocol/Protocol.Enum.h"
 #include "Net.IP.Enum.h"
 
 int Protocol_UDP_Init(Net_Core_Device_Node_Type *P_Net_Node,Net_Protocol_UDP_DATA_Type *P_Protocol_UDP_DATA);

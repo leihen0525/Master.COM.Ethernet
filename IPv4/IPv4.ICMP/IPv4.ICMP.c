@@ -10,7 +10,7 @@
 #include "Core/Core.Define.h"
 #include "Core/Core.h"
 
-#include "IPv4.h"
+#include "IPv4/IPv4.h"
 #include "IPv4.ICMP.Enum.h"
 #include "IPv4.ICMP.Struct.h"
 #include "IPv4.ICMP.h"

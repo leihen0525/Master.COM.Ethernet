@@ -8,6 +8,12 @@
 #ifndef NET_API_H_
 #define NET_API_H_
 
+#include "API.h"
+
+#if (Master_OS_Main_Versions!=1)
+#error "Master OS Versions Error!!!"
+#endif
+
 #include "Net.Error.h"
 #include "Net.IPv4.Define.h"
 #include "Net.API.Enum.h"

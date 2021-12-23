@@ -206,7 +206,7 @@
 							<option id="iar.arm.toolchain.option.AgatonSax::rtcUnhandledCase.v8.0.0.1364854544" name="Unhandled switch case" superClass="iar.arm.toolchain.option.AgatonSax::rtcUnhandledCase.v8.0.0"/>
 							<option id="iar.arm.toolchain.option.AgatonSax::rtcDivByZero.v8.0.0.1204965757" name="Division by zero" superClass="iar.arm.toolchain.option.AgatonSax::rtcDivByZero.v8.0.0"/>
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="iar.arm.toolchain.targetPlatform.v8.0.0.1983819874" isAbstract="false" name="IAR Target platform for ARM (ELF)" osList="win32,linux" superClass="iar.arm.toolchain.targetPlatform.v8.0.0"/>
-							<builder buildPath="${workspace_loc:/Master.COM.Ethernet}/Debug" id="iar.arm.toolchain.builder.v8.0.0.1022741569" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="iar.arm.toolchain.builder.v8.0.0"/>
+							<builder buildPath="${workspace_loc:/Master.COM.Ethernet}/Debug" id="iar.arm.toolchain.builder.v8.0.0.1022741569" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" parallelBuildOn="true" parallelizationNumber="unlimited" superClass="iar.arm.toolchain.builder.v8.0.0"/>
 							<tool id="iar.arm.toolchain.compiler.v8.0.0.112871412" name="IAR C/C++ Compiler for ARM" superClass="iar.arm.toolchain.compiler.v8.0.0">
 								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.debugInfo.v8.0.0.2035565956" name="Generate debug information" superClass="iar.arm.toolchain.compiler.option.debugInfo.v8.0.0" valueType="boolean"/>
 								<option defaultValue="iar.arm.toolchain.compiler.option.optLevel.none.v8.0.0" id="iar.arm.toolchain.compiler.option.optLevel.v8.0.0.1465697837" name="Optimization level:" superClass="iar.arm.toolchain.compiler.option.optLevel.v8.0.0" useByScannerDiscovery="false" value="iar.arm.toolchain.compiler.option.optLevel.none.v8.0.0" valueType="enumerated"/>
@@ -328,16 +328,20 @@
 							<option id="iar.arm.toolchain.option.AgatonSax::rtcInclUnsignedShiftOverflow.v8.0.0.988224918.616335555" name="Including unsigned shifts" superClass="iar.arm.toolchain.option.AgatonSax::rtcInclUnsignedShiftOverflow.v8.0.0.988224918"/>
 							<option id="iar.arm.toolchain.option.AgatonSax::rtcUnhandledCase.v8.0.0.1364854544.1582466853" name="Unhandled switch case" superClass="iar.arm.toolchain.option.AgatonSax::rtcUnhandledCase.v8.0.0.1364854544"/>
 							<option id="iar.arm.toolchain.option.AgatonSax::rtcDivByZero.v8.0.0.1204965757.965156601" name="Division by zero" superClass="iar.arm.toolchain.option.AgatonSax::rtcDivByZero.v8.0.0.1204965757"/>
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="iar.arm.toolchain.targetPlatform.v8.0.0" isAbstract="false" name="IAR Target platform for ARM (ELF)" osList="win32,linux" superClass="iar.arm.toolchain.targetPlatform.v8.0.0"/>
 							<tool id="iar.arm.toolchain.compiler.v8.0.0.1715936125" name="IAR C/C++ Compiler for ARM" superClass="iar.arm.toolchain.compiler.v8.0.0.112871412">
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optCSE.v8.0.0.1845921990" superClass="iar.arm.toolchain.compiler.option.optCSE.v8.0.0" valueType="boolean"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optUnroll.v8.0.0.555727029" superClass="iar.arm.toolchain.compiler.option.optUnroll.v8.0.0" valueType="boolean"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optInline.v8.0.0.1391636811" superClass="iar.arm.toolchain.compiler.option.optInline.v8.0.0" valueType="boolean"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0.735423757" superClass="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0" valueType="boolean"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optAliasAnalysis.v8.0.0.37110990" superClass="iar.arm.toolchain.compiler.option.optAliasAnalysis.v8.0.0" valueType="boolean"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0.1942367057" superClass="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0" valueType="boolean"/>
-								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optScheduling.v8.0.0.1740634667" superClass="iar.arm.toolchain.compiler.option.optScheduling.v8.0.0" valueType="boolean"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optCSE.v8.0.0.1845921990" name="Disable common subexpression elimination" superClass="iar.arm.toolchain.compiler.option.optCSE.v8.0.0" valueType="boolean"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optUnroll.v8.0.0.555727029" name="Disable loop unrolling" superClass="iar.arm.toolchain.compiler.option.optUnroll.v8.0.0" valueType="boolean"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optInline.v8.0.0.1391636811" name="Disable function inlining" superClass="iar.arm.toolchain.compiler.option.optInline.v8.0.0" valueType="boolean"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0.735423757" name="Disable code motion" superClass="iar.arm.toolchain.compiler.option.optCodeMotion.v8.0.0" valueType="boolean"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optAliasAnalysis.v8.0.0.37110990" name="Disable type-based alias analysis" superClass="iar.arm.toolchain.compiler.option.optAliasAnalysis.v8.0.0" valueType="boolean"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0.1942367057" name="Disable static clustering" superClass="iar.arm.toolchain.compiler.option.optStaticClustering.v8.0.0" valueType="boolean"/>
+								<option defaultValue="true" id="iar.arm.toolchain.compiler.option.optScheduling.v8.0.0.1740634667" name="Disable instruction scheduling" superClass="iar.arm.toolchain.compiler.option.optScheduling.v8.0.0" valueType="boolean"/>
+								<inputType id="iar.arm.toolchain.compiler.inputType.c.v8.0.0.458082472" name="IAR C/C++ Compiler Input Type" superClass="iar.arm.toolchain.compiler.inputType.c.v8.0.0"/>
 							</tool>
-							<tool id="iar.arm.toolchain.assembler.v8.0.0.192604152" name="IAR Assembler for ARM" superClass="iar.arm.toolchain.assembler.v8.0.0.410541009"/>
+							<tool id="iar.arm.toolchain.assembler.v8.0.0.192604152" name="IAR Assembler for ARM" superClass="iar.arm.toolchain.assembler.v8.0.0.410541009">
+								<inputType id="iar.arm.toolchain.assembler.inputType.asmFile.v8.0.0.320068929" name="IAR Assembler input type for ARM (asm, s)" superClass="iar.arm.toolchain.assembler.inputType.asmFile.v8.0.0"/>
+							</tool>
 							<tool id="iar.arm.toolchain.linker.v8.0.0.1816328420" name="IAR Linker for ARM" superClass="iar.arm.toolchain.linker.v8.0.0.415778024"/>
 							<tool id="iar.arm.toolchain.archive.v8.0.0.655540793" name="IAR Library Builder for ARM" superClass="iar.arm.toolchain.archive.v8.0.0.1010850508"/>
 						</toolChain>

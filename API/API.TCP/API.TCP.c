@@ -14,8 +14,9 @@
 #include "Core/Core.h"
 
 #include "Protocol/Protocol.PORT.h"
-#include "Protocol/Protocol.TCP.Link.h"
-#include "Protocol/Protocol.TCP.h"
+#include "Protocol/Protocol.TCP/Protocol.TCP.Enum.h"
+#include "Protocol/Protocol.TCP/Protocol.TCP.Link.h"
+#include "Protocol/Protocol.TCP/Protocol.TCP.h"
 
 Net_API_TCP_DATA_Type Net_API_TCP_DATA;
 
@@ -23,6 +24,7 @@ int Net_TCP_Init(void)
 {
 	Net_API_TCP_DATA.Head=Null;
 	Net_API_TCP_DATA.End=Null;
+
 	return Error_OK;
 }
 
@@ -34,7 +36,7 @@ int Net_TCP_Create(
 	int Err;
 	if(Device_Name==Null || Rx_Buffer_Max_Length==0)
 	{
-		//TODO 这个参数为NULL还未实现
+		//TODO Device_Name这个参数为NULL还未实现
 		return Error_Invalid_Parameter;
 	}
 
@@ -311,11 +313,8 @@ int Net_TCP_Connect(
 	//
 	if(P_TCP_Node->Link_Node==Null)
 	{
-		Temp_Link_Node=Memory_Malloc(sizeof(Net_Protocol_TCP_Link_Node_Type));
-		if(Temp_Link_Node==Null)
-		{
-			return Error_Allocation_Memory_Failed;
-		}
+		Error_NoArgs_Return(Err,Protocol_TCP_Link_New_Link_Node_To_Link_List(&P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link, &Temp_Link_Node));
+
 		Temp_Link_Node->Handle=P_TCP_Node->Handle;
 		Temp_Link_Node->Server=false;
 		Temp_Link_Node->IP_Type=P_IP_Information->IP_Type;
@@ -326,8 +325,7 @@ int Net_TCP_Connect(
 
 		P_TCP_Node->Link_Node=Temp_Link_Node;
 
-		P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.Count++;
-		List_Add_Node_To_End(P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.Head,P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.End,NEXT,Temp_Link_Node);
+
 	}
 	else
 	{
@@ -353,9 +351,6 @@ int Net_TCP_Connect(
 	Temp_Link_Node->Local_Info.Condition=Net_Protocol_TCP_Link_Condition_SYN_SENT;
 	Temp_Link_Node->Dest_Info.Condition=Net_Protocol_TCP_Link_Condition_SYN_RCVD;
 
-	Net_Protocol_TCP_Packet_Heade_Flags_Type Flags={.DATA=0};
-	Flags.Syn=1;
-
 	Error_NoArgs_Return(Err,
 			Protocol_TCP_Tx(
 					Temp_Link_Node->IP_Type,
@@ -365,7 +360,7 @@ int Net_TCP_Connect(
 					Temp_Link_Node->Dest_Info.PORT,
 					Temp_Link_Node->Local_Info.SEQ,
 					0,
-					Flags,
+					Net_Protocol_TCP_Packet_Flags_Syn,
 					Temp_Link_Node->Local_Info.Window_Size,
 					0,
 					Null,
@@ -420,8 +415,8 @@ int Net_TCP_Listen(
 	}
 
 	Error_NoArgs_Return(Err,
-			Protocol_TCP_Link_Add_Listen_Node_To_Listen_List(
-					&P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA,
+			Protocol_TCP_Link_New_Listen_Node_To_Listen_List(
+					&P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Listen,
 					Handle,
 					P_TCP_Node->Bind.IP_Info.IP_Type,
 					P_TCP_Node->Bind.IP_Info.PORT,
@@ -472,36 +467,40 @@ int Net_TCP_Accept(
 	P_TCP_Node->Listen_Node->Count--;
 
 
-	Net_API_TCP_Node_Type *P_TCP_Add=Memory_Malloc(sizeof(Net_API_TCP_Node_Type));
-	if(P_TCP_Add==Null)
+	Net_API_TCP_Node_Type *P_TCP_New=Memory_Malloc(sizeof(Net_API_TCP_Node_Type));
+	if(P_TCP_New==Null)
 	{
 		Err=Error_Allocation_Memory_Failed;
 		goto Net_TCP_Accept_Exit;
 	}
 
-	Error_Args(P_TCP_Add->Handle,Handle_New())
+	Error_Args(P_TCP_New->Handle,Handle_New())
 	{
-		Err=P_TCP_Add->Handle;
+		Err=P_TCP_New->Handle;
 		goto Net_TCP_Accept_Exit1;
 	}
 	//
 
-	P_TCP_Add->Type=Net_API_TCP_Handle_Link_Listen;
-	P_TCP_Add->Device_Node=P_TCP_Node->Device_Node;
-	P_TCP_Add->Rx_Buffer_Max_Length=P_TCP_Node->Rx_Buffer_Max_Length;
-	P_TCP_Add->Link_Node=Temp_Link_Node;
-	Temp_Link_Node->Handle=P_TCP_Add->Handle;
+	P_TCP_New->Type=Net_API_TCP_Handle_Link_Listen;
+	P_TCP_New->Device_Node=P_TCP_Node->Device_Node;
+	P_TCP_New->Rx_Buffer_Max_Length=P_TCP_Node->Rx_Buffer_Max_Length;
+	P_TCP_New->Link_Node=Temp_Link_Node;
+	Temp_Link_Node->Handle=P_TCP_New->Handle;
 
 	P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.Count++;
 	List_Add_Node_To_End(P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.Head,P_TCP_Node->Device_Node->Protocol_TCP_DATA.Link_DATA.Link.End,NEXT,Temp_Link_Node);
 
 	//将这个创建的link添加到链表中
-	List_Add_Node_To_End(Net_API_TCP_DATA.Head,Net_API_TCP_DATA.End,NEXT,P_TCP_Add);
+	List_Add_Node_To_End(Net_API_TCP_DATA.Head,Net_API_TCP_DATA.End,NEXT,P_TCP_New);
 
-	return P_TCP_Add->Handle;
+	P_IP_Information->IP_Type=Temp_Link_Node->IP_Type;
+	memcpy(P_IP_Information->IP_Address,Temp_Link_Node->Dest_Info.IP_Address,Temp_Link_Node->IP_Type);
+	P_IP_Information->PORT=Temp_Link_Node->Dest_Info.PORT;
+
+	return P_TCP_New->Handle;
 
 Net_TCP_Accept_Exit1:
-	Memory_Free(P_TCP_Add);
+	Memory_Free(P_TCP_New);
 Net_TCP_Accept_Exit:
 	Memory_Free(Temp_Link_Node);
 

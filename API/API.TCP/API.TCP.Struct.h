@@ -13,7 +13,7 @@
 #include "API.TCP.Enum.h"
 #include "Net.API.Struct.h"
 
-#include "Protocol/Protocol.TCP.Link.Struct.h"
+#include "Protocol/Protocol.TCP/Protocol.TCP.Link.Struct.h"
 
 typedef struct Net_API_TCP_Node
 {

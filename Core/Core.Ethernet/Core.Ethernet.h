@@ -10,9 +10,11 @@
 
 #include "Master.Stdint.h"
 #include "Core.Ethernet.Enum.h"
-#include "Core.Struct.h"
+#include "Core/Core.Struct.h"
 
-void Net_Core_Ethernet_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *DATA);
+int Net_Core_Ethernet_Handle_Tx(Net_Core_Device_Node_Type *P_Net_Node);
+
+int Net_Core_Ethernet_Handle_Rx(Net_Core_Device_Node_Type *P_Net_Node,uint8_t *DATA);
 
 int Net_Core_Ethernet_Tx_DATA(
 		Net_Core_Device_Node_Type *P_Net_Node,

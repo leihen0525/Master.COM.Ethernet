@@ -25,4 +25,22 @@ typedef enum
 	Net_Protocol_TCP_Options_Kind_Experimental2		=254,	//保留，用于科研实验
 }Net_Protocol_TCP_Options_Kind_Type;
 
+
+
+typedef enum
+{
+	Net_Protocol_TCP_Packet_Flags_Fin				=(1<<0),//释放连接
+	Net_Protocol_TCP_Packet_Flags_Syn				=(1<<1),//请求连接
+	Net_Protocol_TCP_Packet_Flags_Reset				=(1<<2),//拒绝连接
+	Net_Protocol_TCP_Packet_Flags_Push				=(1<<3),
+	Net_Protocol_TCP_Packet_Flags_Ack				=(1<<4),//确认号有效
+	Net_Protocol_TCP_Packet_Flags_Urgent			=(1<<5),
+	Net_Protocol_TCP_Packet_Flags_ECN_Echo			=(1<<6),
+	Net_Protocol_TCP_Packet_Flags_CWR				=(1<<7),
+
+	Net_Protocol_TCP_Packet_Flags_Nonce				=(1<<8),
+}Net_Protocol_TCP_Packet_Flags_Type;
+
+
+
 #endif /* PROTOCOL_TCP_ENUM_H_ */

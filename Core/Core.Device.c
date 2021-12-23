@@ -13,11 +13,11 @@
 #include "Includes/Net.Core.Device.h"
 //#include "Includes/Net.Device.Struct.h"
 
-#include "IPv4/IPv4.ARP.h"
+#include "IPv4/IPv4.ARP/IPv4.ARP.h"
 #include "IPv4/IPv4.h"
 #include "IPv4/IPv4.Define.h"
-#include "Protocol/Protocol.TCP.h"
-#include "Protocol/Protocol.UDP.h"
+#include "Protocol/Protocol.TCP/Protocol.TCP.h"
+#include "Protocol/Protocol.UDP/Protocol.UDP.h"
 //#include "Session/Session.h"
 //#include "Socket/Socket.h"
 
